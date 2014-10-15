@@ -83,8 +83,9 @@ public class SimpleTask3 {
 			else if (geomObj == 4) {
 				int resolution = 64;
 
-				Landscape landscape = new Landscape(resolution, 10, 0, 0, 0, 0);
-				landscape.setSnowLine(1);
+				Landscape landscape = new Landscape(resolution, 15, 0, 0, 0, 0);
+				landscape.setSnowAndWaterLine(1.5, 0.5);
+				
 				shape = landscape.getShape(renderContext);
 				shape.getTransformation().setScale((float) (5 / Math.sqrt(resolution)));
 				sceneManager.addShape(shape);
@@ -230,15 +231,9 @@ public class SimpleTask3 {
 
 				sceneManager.getCamera().rotateCamera(axis, angle);
 				
-				// -----------------------------------
-				Matrix4f rotation = new Matrix4f();
-				rotation.setIdentity();
-				rotation.setRotation(new AxisAngle4f(axis, -angle));
-
-				rotation.mul(transformation);
-				// -----------------------------------
-				
 				renderPanel.getCanvas().repaint();
+				
+				p1 = new Vector3f(p2);
 			}
 
 			public void mouseReleased(MouseEvent e) {

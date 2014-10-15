@@ -87,12 +87,12 @@ public class SimpleTask2 {
 			}
 
 			else if (geomObj == 4) {
-				int resolution = 16;
+				int resolution = 32;
 
 				Landscape landscape = new Landscape(resolution, 15, 0, 0, 0, 5);
-				landscape.setSnowLine(1);
+				landscape.setSnowAndWaterLine(1.5, 0.5);
 				shape = landscape.getShape(renderContext);
-				shape.getTransformation().setScale((float) (1 / Math.sqrt(resolution)));
+				shape.getTransformation().setScale((float) (10 / Math.sqrt(resolution)));
 				sceneManager.addShape(shape);
 			}
 

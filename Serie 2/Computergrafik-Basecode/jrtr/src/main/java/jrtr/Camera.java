@@ -112,38 +112,60 @@ public class Camera {
 
 	public void moveCamera(char direction) {
 		Matrix4f tmp = new Matrix4f();
-		Vector3f look2D = new Vector3f();
-		Vector3f orthogonal2D = new Vector3f();
-		orthogonal2D.cross(lookDirection, up);
-		orthogonal2D.normalize();
-		
-		if (direction == 'w')
-			look2D = new Vector3f(lookDirection.x, 0, lookDirection.z);
-		else if (direction == 's')
-			look2D = new Vector3f(-lookDirection.x, 0, -lookDirection.z);
-		else if (direction == 'a')
-			look2D = new Vector3f(-orthogonal2D.x, 0, -orthogonal2D.z);
-		else if (direction == 'd')
-			look2D = new Vector3f(orthogonal2D.x, 0, orthogonal2D.z);
-		
-		look2D.normalize();
-		tmp.setTranslation(look2D);
+		Vector3f lookDir = new Vector3f();
+		Vector3f orthogonal = new Vector3f();
+		orthogonal.cross(lookDirection, up);
+		orthogonal.normalize();
+
+		if (direction == 'w' || direction == 'W')
+			lookDir = new Vector3f(lookDirection);
+		else if (direction == 's' || direction == 'S') {
+			lookDir = new Vector3f(lookDirection);
+			lookDir.negate();
+		} else if (direction == 'a' || direction == 'A') {
+			lookDir = new Vector3f(orthogonal);
+		} else if (direction == 'd' || direction == 'D') {
+			lookDir = new Vector3f(orthogonal);
+			lookDir.negate();
+		}
+
+		lookDir.normalize();
+		tmp.setTranslation(lookDir);
 		cameraMatrix.add(tmp);
 	}
-	
-	public void rotateCamera(Vector3f axis, float angle){
+
+	public void rotateCamera(Vector3f axis, float angle) {
+
 		Matrix4f rotation = new Matrix4f();
 		rotation.setIdentity();
-		rotation.setRotation(new AxisAngle4f(axis, -angle/10));
+		rotation.setRotation(new AxisAngle4f(axis, angle));
+		cameraMatrix.invert();
+		cameraMatrix.mul(rotation);
 
-		Vector3f translation = new Vector3f();
-		cameraMatrix.get(translation);
-		cameraMatrix.setTranslation(new Vector3f());
-		
-		rotation.mul(cameraMatrix);
-		
-		cameraMatrix.setTranslation(translation);
-		
-		cameraMatrix = rotation;
+		updateUpVector();
+		updateCenter();
+
+		cameraMatrix.invert();
+	}
+
+	private void updateUpVector() {
+		Vector4f xVector = new Vector4f();
+		cameraMatrix.getColumn(0, xVector);
+		Vector3f x = new Vector3f(xVector.x, xVector.y, xVector.z);
+
+		Vector4f zVector = new Vector4f();
+		cameraMatrix.getColumn(2, zVector);
+		Vector3f z = new Vector3f(zVector.x, zVector.y, zVector.z);
+
+		up.cross(x, z);
+		up.normalize();
+	}
+
+	private void updateCenter() {
+		Vector4f tmp = new Vector4f();
+		cameraMatrix.getColumn(3, tmp);
+
+		center = new Vector3f(tmp.x, tmp.y, tmp.z);
+		center.normalize();
 	}
 }

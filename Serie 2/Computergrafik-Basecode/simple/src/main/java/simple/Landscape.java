@@ -311,34 +311,36 @@ public class Landscape {
 
 	/**
 	 * 
-	 * @param snow
+	 * @param d
 	 *            whith which the average heihgt is multiplied to get the snow line
 	 *            factor * average height = snow line;
 	 * @return the color array to the landscape
 	 */
-	public float[] setSnowLine(float snow) {
+	public void setSnowAndWaterLine(double snow, double water) {
 		colors = new float[(res + 1) * (res + 1) * 3];
 		int average = 0;
 
 		for (int i = 0; i < 3 * (res + 1) * (res + 1); i += 3)
-			average += positions[i + 2];
+			average += positions[i + 1];
 
 		average /= (res + 1) * (res + 1);
 
 		for (int i = 0; i < 3 * (res + 1) * (res + 1); i += 3) {
 
-			if (positions[i + 1] < snow * average) {
-				colors[i + 0] = 0;
-				colors[i + 1] = (float) 0.75;
-				colors[i + 2] = 0;
-			} else {
+			if (positions[i + 1] > snow * average) {
 				colors[i + 0] = 1;
 				colors[i + 1] = 1;
 				colors[i + 2] = 1;
+			} else if (positions[i + 1] < water * average) {
+				colors[i + 0] = 0;
+				colors[i + 1] = 0;
+				colors[i + 2] = 1;
+			} else {
+				colors[i + 0] = 0;
+				colors[i + 1] = (float) 0.75;
+				colors[i + 2] = 0;
 			}
 		}
-
-		return colors;
 	}
 
 	public Shape getShape(jrtr.RenderContext renderContext) {
