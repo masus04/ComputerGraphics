@@ -48,7 +48,7 @@ public class SimpleTask1 {
 			Camera camera = sceneManager.getCamera();
 			Frustum frustum = sceneManager.getFrustum();
 			
-			int cam = 1;
+			int cam = 0;
 
 			if (cam == 0) {
 				camera.setCenterOfProjection(0, 0, 40);

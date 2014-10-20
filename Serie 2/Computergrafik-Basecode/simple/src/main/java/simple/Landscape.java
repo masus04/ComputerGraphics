@@ -65,10 +65,6 @@ public class Landscape {
 
 		map = new float[res + 1][res + 1];
 
-		for (int i = 0; i < res + 1; i++)
-			for (int j = 0; j < res + 1; j++)
-				map[i][j] = Float.MIN_VALUE;
-
 		map[0][0] = height0;										// p1 -- p2
 		map[0][res] = height1;										// '     '
 		map[res][0] = height2;										// '     '
@@ -87,7 +83,7 @@ public class Landscape {
 			for (int j = 0; j < res; j += span)
 				map[i][j] = calculateDiamond(new Point(i, j), span, depth);
 
-		square(span, depth + 1);
+		square(span, depth + 5);
 	}
 
 	private static void square(int span, int depth) {
@@ -95,7 +91,7 @@ public class Landscape {
 			for (int j = 0; j < res; j += span) {
 				calculateSquare(new Point(i, j), span, depth);
 			}
-		diamond(span / 2, depth + 1);
+		diamond(span / 2, depth + 5);
 	}
 
 	private static float calculateDiamond(Point p, int span, int depth) {
@@ -224,6 +220,7 @@ public class Landscape {
 				positions[3 * x * (res + 1) + z + 0] = x - res / 2;
 				positions[3 * x * (res + 1) + z + 1] = map[x][z / 3];
 				positions[3 * x * (res + 1) + z + 2] = z / 3 - res / 2;
+
 			}
 
 		return positions;
@@ -327,11 +324,11 @@ public class Landscape {
 
 		for (int i = 0; i < 3 * (res + 1) * (res + 1); i += 3) {
 
-			if (positions[i + 1] > snow * average) {
+			if (positions[i + 1] > (snow* average)) {
 				colors[i + 0] = 1;
 				colors[i + 1] = 1;
 				colors[i + 2] = 1;
-			} else if (positions[i + 1] < water * average) {
+			} else if (positions[i + 1] < (water* average)) {
 				colors[i + 0] = 0;
 				colors[i + 1] = 0;
 				colors[i + 2] = 1;
