@@ -76,7 +76,7 @@ public class SWRenderContext implements RenderContext {
 	 */
 	private void draw(RenderItem renderItem) {
 		ArrayList<Triangle> triangles = extractTriangles(renderItem);
-
+		
 		c = sceneManager.getCamera().getCameraMatrix();
 		p = sceneManager.getFrustum().getProjectionMatrix();
 	}
