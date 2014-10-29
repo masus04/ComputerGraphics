@@ -7,6 +7,7 @@ import java.awt.image.*;
 import java.util.ArrayList;
 
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector4f;
 
 /**
@@ -21,6 +22,7 @@ public class SWRenderContext implements RenderContext {
 
 	private SceneManagerInterface sceneManager;
 	private BufferedImage colorBuffer;
+	private float[][] zBuffer;
 	private ArrayList<Triangle> triangles;
 
 	private static Matrix4f c, p, m, d, transformation;
@@ -61,6 +63,11 @@ public class SWRenderContext implements RenderContext {
 	 */
 	public void setViewportSize(int width, int height) {
 		colorBuffer = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+		zBuffer = new float[colorBuffer.getWidth()][colorBuffer.getHeight()];
+
+		for (int i = 0; i < colorBuffer.getWidth(); i++)
+			for (int j = 0; j < colorBuffer.getHeight(); j++)
+				zBuffer[i][j] = Float.MIN_VALUE;
 	}
 
 	/**
@@ -91,6 +98,17 @@ public class SWRenderContext implements RenderContext {
 
 	}
 
+	/**
+	 * draws a pixel p if it is in front of the pixel painted there before.
+	 * 
+	 */
+	private void drawPixel(Vector4f p) {
+		if (zBuffer[(int) p.x][(int) p.y] < 1 / p.w) {
+			colorBuffer.setRGB((int) (p.x / p.w), (int) (p.y / p.w), Color.WHITE.getRGB());
+			zBuffer[(int) p.x][(int) p.y] = 1 / p.w;
+		}
+	}
+
 	private void drawVertices(RenderItem renderItem) {
 
 		float[] vertices = renderItem.getShape().getVertexData().getPositions();
@@ -117,15 +135,15 @@ public class SWRenderContext implements RenderContext {
 
 			p = new Vector4f(t.getP1());
 			if (inBounds(p, p.w))
-				colorBuffer.setRGB((int) (p.x / p.w), (int) (p.y / p.w), Color.WHITE.getRGB());
+				drawPixel(p);
 
 			p = new Vector4f(t.getP2());
 			if (inBounds(p, p.w))
-				colorBuffer.setRGB((int) (p.x / p.w), (int) (p.y / p.w), Color.WHITE.getRGB());
+				drawPixel(p);
 
 			p = new Vector4f(t.getP3());
 			if (inBounds(p, p.w))
-				colorBuffer.setRGB((int) (p.x / p.w), (int) (p.y / p.w), Color.WHITE.getRGB());
+				drawPixel(p);
 		}
 	}
 
@@ -142,9 +160,8 @@ public class SWRenderContext implements RenderContext {
 					for (int j = (int) boundingBox[2]; j < (int) boundingBox[3]; j++) {
 						// loop over all pixels inside the bounding box
 						pixel = new Vector4f(i, j, 0, 1);
-						if(t.isdrawn(pixel))
-							colorBuffer.setRGB((int)pixel.x, (int)pixel.y, t.color(pixel));
-
+						if (t.isdrawn(pixel))
+							colorBuffer.setRGB((int) pixel.x, (int) pixel.y, t.colorAt(pixel).getRGB());
 					}
 			}
 		}
@@ -187,18 +204,24 @@ public class SWRenderContext implements RenderContext {
 		float[] positions = renderItem.getShape().getVertexData().getPositions();
 		int[] indices = renderItem.getShape().getVertexData().getIndices();
 		float[] colors = renderItem.getShape().getVertexData().getColors();
-		float[] normals = renderItem.getShape().getVertexData().getNormals();
+		//float[] normals = renderItem.getShape().getVertexData().getNormals();
 
-		Vector4f p1, p2, p3; // TODO
+		Vector4f p1, p2, p3;
+		Vector3d c1, c2, c3;
 		for (int i = 0; i < indices.length; i += 3) {
 			p1 = new Vector4f(positions[indices[i + 0] * 3 + 0], positions[indices[i + 0] * 3 + 1],
 					positions[indices[i + 0] * 3 + 2], 1);
+			c1 = new Vector3d(colors[indices[i + 0] * 3 + 0], colors[indices[i + 0] * 3 + 1], colors[indices[i + 0] * 3 + 2]);
+
 			p2 = new Vector4f(positions[indices[i + 1] * 3 + 0], positions[indices[i + 1] * 3 + 1],
 					positions[indices[i + 1] * 3 + 2], 1);
+			c2 = new Vector3d(colors[indices[i + 1] * 3 + 0], colors[indices[i + 1] * 3 + 1], colors[indices[i + 1] * 3 + 2]);
+
 			p3 = new Vector4f(positions[indices[i + 2] * 3 + 0], positions[indices[i + 2] * 3 + 1],
 					positions[indices[i + 2] * 3 + 2], 1);
+			c3 = new Vector3d(colors[indices[i + 2] * 3 + 0], colors[indices[i + 2] * 3 + 1], colors[indices[i + 2] * 3 + 2]);
 
-			triangle = new Triangle(p1, p2, p3);
+			triangle = new Triangle(p1, p2, p3, c1, c2, c3);
 			//triangle.calculateEdgeFunction();
 
 			triangles.add(triangle);

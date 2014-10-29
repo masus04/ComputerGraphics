@@ -1,13 +1,17 @@
 package jrtr;
 
+import java.awt.Color;
+
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.SingularMatrixException;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
 public class Triangle {
-	private static Vector4f p1, p2, p3;
+	private static Vector4f p1, p2, p3;		// coordinates of points
+	private static Vector3d c1, c2, c3;		// colors to points
 
 	private boolean isTransformed = false;
 
@@ -19,6 +23,18 @@ public class Triangle {
 		Triangle.p3 = p3;
 
 		calculateEdgeFunction();
+	}
+
+	public Triangle(Vector4f p1, Vector4f p2, Vector4f p3, Vector3d c1, Vector3d c2, Vector3d c3) {
+		Triangle.p1 = p1;
+		Triangle.p2 = p2;
+		Triangle.p3 = p3;
+
+		calculateEdgeFunction();
+
+		Triangle.c1 = c1;
+		Triangle.c2 = c2;
+		Triangle.c3 = c3;
 	}
 
 	public Vector4f getP1() {
@@ -111,62 +127,83 @@ public class Triangle {
 
 		if (!isVisible())
 			return false;
-			
+
 		return (alphaFunction(pixel) > 0 && betaFunction(pixel) > 0 && gammaFunction(pixel) > 0);
 	}
 
 	public boolean isVisible() {
 		return (p1.w > 0 && p2.w > 0 && p3.w > 0);
 	}
-	
+
 	/**
 	 * 
 	 * @return an array containing the left, right, upper and lower border of the bounding box.
 	 * 
-	 * [leftBorder, rightBorder, upperBorder, lowerBorder]
+	 *         [leftBorder, rightBorder, upperBorder, lowerBorder]
 	 */
-	public float[] getBoundingBox(){
+	public float[] getBoundingBox() {
 		float[] values = new float[4];
-		
+
 		values[0] = min(p1.x, p2.x, p3.x);
 		values[1] = max(p1.x, p2.x, p3.x);
 		values[2] = min(p1.y, p2.y, p3.y);
 		values[3] = max(p1.y, p2.y, p3.y);
-	
+
 		return values;
 	}
-	
-	
 
 	private static float min(float a, float b, float c) {
-	      if (b < a) {
-	          a = b;
-	      }
-	      if (c < a) {
-	          a = c;
-	      }
-	      return a;
-	  }
-	
-	private float max(float a, float b, float c) {
-		 if (b > a) {
-	          a = b;
-	      }
-	      if (c > a) {
-	          a = c;
-	      }
-	      
-	      return a;
+		if (b < a) {
+			a = b;
+		}
+		if (c < a) {
+			a = c;
+		}
+		return a;
 	}
 
-	
+	private float max(float a, float b, float c) {
+		if (b > a) {
+			a = b;
+		}
+		if (c > a) {
+			a = c;
+		}
+
+		return a;
+	}
+
 	/**
 	 * 
 	 * @param pixel
-	 * @return calculates the color to the pixel inside the triangle
+	 * @return calculates the color to the pixel p inside the triangle
 	 */
-	public int color(Vector4f pixel) {
-		// TODO Auto-generated method stub
-		return 0;
+	public Color colorAt(Vector4f pixel) {
+		Vector3d tmpColor;
+		Vector4f tmp = new Vector4f();
+
+		tmpColor = new Vector3d(distance(p2, pixel) / distance(p2, p1) * c1.x + distance(pixel, p1) / distance(p2, p1)
+				* c2.x, distance(p2, pixel) / distance(p2, p1) * c1.y + distance(pixel, p1) / distance(p2, p1) * c2.y,
+				distance(p2, pixel) / distance(p2, p1) * c1.z + distance(pixel, p1) / distance(p2, p1) * c2.z);
+
+		// Project pixel to p2-p1 line
+		Vector4f projPixelX = new Vector4f();
+		projPixelX.sub(p2, p1);
+		tmp = new Vector4f(pixel);
+		tmp.normalize();
+		projPixelX.dot(tmp);
+		projPixelX.dot(tmp);
+
+		tmpColor = new Vector3d(distance(p3, pixel) / distance(p3, projPixelX) * tmpColor.x + distance(pixel, projPixelX)
+				/ distance(p3, projPixelX) * c3.x, distance(p3, pixel) / distance(p3, projPixelX) * tmpColor.y
+				+ distance(pixel, projPixelX) / distance(p3, projPixelX) * c3.y, distance(p3, pixel)
+				/ distance(p3, projPixelX) * tmpColor.z + distance(pixel, projPixelX) / distance(p3, projPixelX) * c3.z);
+
+		return new Color((float) tmpColor.x, (float) tmpColor.y, (float) tmpColor.z);
+	}
+
+	private float distance(Vector4f pixel, Vector4f tmp) {
+		tmp.sub(p2, pixel);
+		return tmp.length();
 	}
 }
