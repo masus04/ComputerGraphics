@@ -87,7 +87,7 @@ public class SWRenderContext implements RenderContext {
 		extractTriangles(renderItem);
 		initTransformationMatrix(renderItem);
 
-		int task = 1;
+		int task = 0;
 
 		if (task == 0) {						// put all vertices in triangles for transformation
 			drawVertices(renderItem);

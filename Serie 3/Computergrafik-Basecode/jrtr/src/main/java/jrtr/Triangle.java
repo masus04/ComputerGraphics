@@ -179,27 +179,31 @@ public class Triangle {
 	 * @return calculates the color to the pixel p inside the triangle
 	 */
 	public Color colorAt(Vector4f pixel) {
-		Vector3d tmpColor;
-		Vector4f tmp = new Vector4f();
+		if (isInside(pixel)) {
+			Vector3d tmpColor;
+			Vector4f tmp = new Vector4f();
 
-		tmpColor = new Vector3d(distance(p2, pixel) / distance(p2, p1) * c1.x + distance(pixel, p1) / distance(p2, p1)
-				* c2.x, distance(p2, pixel) / distance(p2, p1) * c1.y + distance(pixel, p1) / distance(p2, p1) * c2.y,
-				distance(p2, pixel) / distance(p2, p1) * c1.z + distance(pixel, p1) / distance(p2, p1) * c2.z);
+			tmpColor = new Vector3d(distance(p2, pixel) / distance(p2, p1) * c1.x + distance(pixel, p1) / distance(p2, p1)
+					* c2.x, distance(p2, pixel) / distance(p2, p1) * c1.y + distance(pixel, p1) / distance(p2, p1) * c2.y,
+					distance(p2, pixel) / distance(p2, p1) * c1.z + distance(pixel, p1) / distance(p2, p1) * c2.z);
 
-		// Project pixel to p2-p1 line
-		Vector4f projPixelX = new Vector4f();
-		projPixelX.sub(p2, p1);
-		tmp = new Vector4f(pixel);
-		tmp.normalize();
-		projPixelX.dot(tmp);
-		projPixelX.dot(tmp);
+			// Project pixel to p2-p1 line
+			Vector4f projPixelX = new Vector4f();
+			projPixelX.sub(p2, p1);
+			tmp = new Vector4f(pixel);
+			tmp.normalize();
+			projPixelX.dot(tmp);
+			projPixelX.dot(tmp);
 
-		tmpColor = new Vector3d(distance(p3, pixel) / distance(p3, projPixelX) * tmpColor.x + distance(pixel, projPixelX)
-				/ distance(p3, projPixelX) * c3.x, distance(p3, pixel) / distance(p3, projPixelX) * tmpColor.y
-				+ distance(pixel, projPixelX) / distance(p3, projPixelX) * c3.y, distance(p3, pixel)
-				/ distance(p3, projPixelX) * tmpColor.z + distance(pixel, projPixelX) / distance(p3, projPixelX) * c3.z);
+			tmpColor = new Vector3d(distance(p3, pixel) / distance(p3, projPixelX) * tmpColor.x
+					+ distance(pixel, projPixelX) / distance(p3, projPixelX) * c3.x, distance(p3, pixel)
+					/ distance(p3, projPixelX) * tmpColor.y + distance(pixel, projPixelX) / distance(p3, projPixelX) * c3.y,
+					distance(p3, pixel) / distance(p3, projPixelX) * tmpColor.z + distance(pixel, projPixelX)
+							/ distance(p3, projPixelX) * c3.z);
 
-		return new Color((float) tmpColor.x, (float) tmpColor.y, (float) tmpColor.z);
+			return new Color((float) tmpColor.x, (float) tmpColor.y, (float) tmpColor.z);
+		}
+		return null;
 	}
 
 	private float distance(Vector4f pixel, Vector4f tmp) {
