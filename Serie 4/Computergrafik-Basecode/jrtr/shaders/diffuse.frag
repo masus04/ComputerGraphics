@@ -6,7 +6,8 @@
 uniform sampler2D myTexture;
 
 // Variables passed in from the vertex shader
-in float ndotl;
+in float ndotl[8];
+in int noLights;
 in vec2 frag_texcoord;
 
 // Output variable, will be written to framebuffer automatically
@@ -14,7 +15,13 @@ out vec4 frag_shaded;
 
 void main()
 {		
+	float tmp=0;
+	
 	// The built-in GLSL function "texture" performs the texture lookup
-	frag_shaded = ndotl * texture(myTexture, frag_texcoord);
+	for (int i=0; i<nLights; i++){
+			tmp += ndolt[i] * texture(myTexture, frag_texcoord);
+	}
+
+	frag_shaded = tmp;
 }
 

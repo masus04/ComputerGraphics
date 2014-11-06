@@ -52,8 +52,18 @@ public class SimpleTask2 {
 			Shape[] shapes = null;
 
 			sceneManager = new SimpleSceneManager();
+			
+			// TODO: add lights
+			Light light = new Light();
+			light.direction = new Vector3f(1, 1, 1);
+			sceneManager.addLight(light);
+			
+			light.direction = new Vector3f(0, 0, 1);
+			sceneManager.addLight(light);
 
-			int geomObj = 2;
+			
+			
+			int geomObj = 0;
 
 			// choose Task
 			if (geomObj == 0) {
@@ -129,6 +139,8 @@ public class SimpleTask2 {
 				System.out.print(e.getMessage());
 			}
 
+			shape.setMaterial(material);
+			
 			// Register a timer task
 			Timer timer = new Timer();
 			basicstep = 0.01f;
@@ -216,8 +228,6 @@ public class SimpleTask2 {
 			}
 
 			public void mouseDragged(MouseEvent e) {
-
-				// TODO: working here
 
 				p2 = transformTo3d(new Point(e.getX(), e.getY()));
 
