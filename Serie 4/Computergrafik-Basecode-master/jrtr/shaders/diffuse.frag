@@ -4,42 +4,47 @@
 
 // Uniform variables passed in from host program
 uniform sampler2D myTexture;
+
 uniform vec4 lightPosition[8];
-uniform vec3 diffuseRadience[8];
-uniform vec3 diffuseReflection;
 uniform int nLights;
 
+// diffuse light
+uniform vec3 diffuseRadience[8];
+uniform vec3 diffuseReflection;
+
+
 // Variables passed in from the vertex shader
-in float ndotl[8];
 in vec2 frag_texcoord;
+in frag_normal;
+in gl_Position;
 
 // Output variable, will be written to framebuffer automatically
 out vec4 frag_shaded;
 
 void main()
 {		
-	// The built-in GLSL function "texture" performs the texture lookup
-	//frag_shaded = ndotl * texture(myTexture, frag_texcoord);
+	vec4 L[8];
 
-	//myTexture.diffuse;
-	
-	// --------------------------------------------------------------------------------------------
-	lightPosition;
-	
-	vec3 sum;
-	sum.x = 0; sum.y = 0; sum.z=0;
-	
-	for (int i = 0; i< nLights; i++){
-		sum.x = sum.x + diffuseRadience[i].x * diffuseReflection.x * ndotl[i];
-		sum.y = sum.y + diffuseRadience[i].y * diffuseReflection.y * ndotl[i];
-		sum.z = sum.z + diffuseRadience[i].z * diffuseReflection.z * ndotl[i];
+
+	// calculate Lightvector L for every light source
+	for (int i=0; i<nLights; i++){
+		L[i] = lightPosition[i] - gl_Position;
 	}
 	
-	frag_shaded.x = sum.x * texture(myTexture, frag_texcoord).x;
-	frag_shaded.y = sum.y * texture(myTexture, frag_texcoord).y;
-	frag_shaded.z = sum.z * texture(myTexture, frag_texcoord).z;
+	// calculate diffuse shading
+	vec3 sum = (0,0,0);
 	
-	// --------------------------------------------------------------------------------------------
+	for (int i=0; i<nLights; i++){
+		vec4 ndotl = max(dot(frag_normal, normalize(L[i])), 0);
+		
+		sum.x = sum.x + diffuseRadience.x * diffuseReflection.x * ndotl.x;
+		sum.y = sum.y + diffuseRadience.y * diffuseReflection.y * ndotl.y;
+		sum.z = sum.z + diffuseRadience.z * diffuseReflection.z * ndotl.z;
+	}
 	
+	frag_shaded = sum * texture(myTexture, frag_texcoord);
+
+	// The built-in GLSL function "texture" performs the texture lookup
+	//frag_shaded = ndotl * texture(myTexture, frag_texcoord);
 }
 

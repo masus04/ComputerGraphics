@@ -15,7 +15,7 @@ public class simple {
 	static RenderPanel renderPanel;
 	static RenderContext renderContext;
 	static Shader normalShader;
-	static Shader diffuseShader, customShader;
+	static Shader diffuseShader;
 	static Material material;
 	static SimpleSceneManager sceneManager;
 	static Shape shape;
@@ -72,11 +72,11 @@ public class simple {
 			vertexData.addElement(uv, VertexData.Semantic.TEXCOORD, 2);
 
 			// The triangles (three vertex indices for each triangle)
-			int indices[] = { 0, 2, 3, 0, 1, 2,			// front face
+			int indices[] = { 0, 2, 3, 0, 1, 2,	// front face
 					4, 6, 7, 4, 5, 6,			// left face
 					8, 10, 11, 8, 9, 10,		// back face
-					12, 14, 15, 12, 13, 14,	// right face
-					16, 18, 19, 16, 17, 18,	// top face
+					12, 14, 15, 12, 13, 14,		// right face
+					16, 18, 19, 16, 17, 18,		// top face
 					20, 22, 23, 20, 21, 22 };	// bottom face
 
 			vertexData.addIndices(indices);
@@ -86,18 +86,9 @@ public class simple {
 			shape = new Shape(vertexData);
 			sceneManager.addShape(shape);
 
-			// TODO: Add light sources
-			Light l = new Light();
-			l.direction = new Vector3f(0, 1, 0);
-			//l.diffuse = new Vector3f(1, 1, 1);
-			//l.specular = new Vector3f(1, 1, 1);
-			sceneManager.addLight(l);
-
-			l = new Light();
-			l.direction = new Vector3f(1, 0, 0);
-			//l.diffuse = new Vector3f(1, 1, 1);
-			//l.specular = new Vector3f(1, 1, 1);
-			//sceneManager.addLight(l);
+			Light light = new Light();
+			light.position = new Vector3f(0, 2, 0);
+			light.diffuse = new Vector3f(1, 1, 1);
 
 			// Add the scene to the renderer
 			renderContext.setSceneManager(sceneManager);
@@ -114,14 +105,6 @@ public class simple {
 			diffuseShader = renderContext.makeShader();
 			try {
 				diffuseShader.load("../jrtr/shaders/diffuse.vert", "../jrtr/shaders/diffuse.frag");
-			} catch (Exception e) {
-				System.out.print("Problem with shader:\n");
-				System.out.print(e.getMessage());
-			}
-			
-			customShader = renderContext.makeShader();
-			try {
-				customShader.load("../jrtr/shaders/custom.vert", "../jrtr/shaders/custom.frag");
 			} catch (Exception e) {
 				System.out.print("Problem with shader:\n");
 				System.out.print(e.getMessage());
@@ -235,25 +218,8 @@ public class simple {
 				break;
 			}
 			case 'm': {
-			
-				
-				
 				// Set a material for more complex shading of the shape
 				if (shape.getMaterial() == null) {
-
-					material.shader = diffuseShader;
-					shape.setMaterial(material);
-				} else {
-					shape.setMaterial(null);
-					renderContext.useDefaultShader();
-				}
-				break;
-			}
-
-			case 'c': {
-				// Set a material for more complex shading of the shape
-				if (shape.getMaterial() == null) {
-					material.shader = customShader;
 					shape.setMaterial(material);
 				} else {
 					shape.setMaterial(null);
