@@ -8,7 +8,7 @@ uniform mat4 projection;
 uniform mat4 modelview;
 uniform int nLights;
 uniform vec4 lightDirection[8];
-uniform vec4 camerPosition;
+uniform vec4 cameraPosition;
 
 // Input vertex attributes; passed in from host program to shader
 // via vertex buffer objects
@@ -37,7 +37,9 @@ void main()
 	for (int i=0; i< nLights; i++){
 		ndotl[i] = max(dot(modelview * vec4(normal,0), lightDirection[i]),0);
 	}
-
+	
+	// --------------------------------------------------
+	
 	for (int i=0; i< nLights; i++){
 		R[i].x = max(2 * dot(lightDirection[i], vec4(normal,0)) * normal.x - lightDirection[i].x, 0);
 		R[i].y = max(2 * dot(lightDirection[i], vec4(normal,0)) * normal.y - lightDirection[i].y, 0);
@@ -45,12 +47,11 @@ void main()
 		R[i].w = 0;
 	}
 	
-	// --------------------------------------------------
+	E.x = position.x - cameraPosition.x;
+	E.y = position.y - cameraPosition.y;
+	E.z = position.z - cameraPosition.z;
+	E.w = 0;
 	
-		// COMPONENTS?
-		E.x = position.x - cameraPosition.x;
-		E.y = position.y - cameraPosition.y;
-		E.z = position.z - cameraPosition.z;
 	// --------------------------------------------------
 	
 	

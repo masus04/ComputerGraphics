@@ -89,10 +89,14 @@ public class simple {
 			// TODO: Add light sources
 			Light l = new Light();
 			l.direction = new Vector3f(-1, 0, 0);
+			l.diffuse = new Vector3f(1, 1, 1);
+			l.specular = new Vector3f(1, 1, 1);
 			sceneManager.addLight(l);
 
 			l = new Light();
 			l.direction = new Vector3f(1, 0, 0);
+			l.diffuse = new Vector3f(1, 1, 1);
+			l.specular = new Vector3f(1, 1, 1);
 			sceneManager.addLight(l);
 
 			// Add the scene to the renderer
@@ -231,20 +235,38 @@ public class simple {
 				break;
 			}
 			case 'm': {
-				// Set a material for more complex shading of the shape
+				
 				if (shape.getMaterial() == null) {
+					material.shader = diffuseShader;
 					shape.setMaterial(material);
 				} else {
 					shape.setMaterial(null);
 					renderContext.useDefaultShader();
 				}
+				// Set a material for more complex shading of the shape
+				/*if (shape.getMaterial() == null) {
+					Material diffuseMaterial = new Material();
+					diffuseMaterial.shader = diffuseShader;
+					diffuseMaterial.texture = renderContext.makeTexture();
+					try {
+						diffuseMaterial.texture.load("../textures/plant.jpg");
+					} catch (Exception ex) {
+						System.out.print("Could not load texture.\n");
+						System.out.print(ex.getMessage());
+					}
+
+					shape.setMaterial(diffuseMaterial);
+				} else {
+					shape.setMaterial(null);
+					renderContext.useDefaultShader();
+				}*/
 				break;
 			}
-			
+
 			case 'c': {
 				// Set a material for more complex shading of the shape
 				if (shape.getMaterial() == null) {
-					
+
 					Material customMaterial = new Material();
 					customMaterial.shader = customShader;
 					customMaterial.texture = renderContext.makeTexture();
@@ -254,8 +276,8 @@ public class simple {
 						System.out.print("Could not load texture.\n");
 						System.out.print(ex.getMessage());
 					}
-					
-					shape.setMaterial(material);
+
+					shape.setMaterial(customMaterial);
 				} else {
 					shape.setMaterial(null);
 					renderContext.useDefaultShader();
