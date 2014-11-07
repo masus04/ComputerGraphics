@@ -236,15 +236,8 @@ public class simple {
 			}
 			case 'm': {
 				
-				if (shape.getMaterial() == null) {
-					material.shader = diffuseShader;
-					shape.setMaterial(material);
-				} else {
-					shape.setMaterial(null);
-					renderContext.useDefaultShader();
-				}
 				// Set a material for more complex shading of the shape
-				/*if (shape.getMaterial() == null) {
+				if (shape.getMaterial() == null) {
 					Material diffuseMaterial = new Material();
 					diffuseMaterial.shader = diffuseShader;
 					diffuseMaterial.texture = renderContext.makeTexture();
@@ -259,7 +252,7 @@ public class simple {
 				} else {
 					shape.setMaterial(null);
 					renderContext.useDefaultShader();
-				}*/
+				}
 				break;
 			}
 
