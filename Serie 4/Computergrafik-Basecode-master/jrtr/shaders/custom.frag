@@ -45,13 +45,9 @@ void main()
 		sum.z = sum.z + diffuseRadience[i].z * diffuseReflection.z * ndotl[i];
 	}
 	
-	frag_shaded.x = sum.x * texture(myTexture, frag_texcoord).x;
-	frag_shaded.y = sum.y * texture(myTexture, frag_texcoord).y;
-	frag_shaded.z = sum.z * texture(myTexture, frag_texcoord).z;
+	
 	
 	// --------------------------------------------------------------------------------------------
-	
-	sum.x = 0; sum.y = 0; sum.z=0;
 	
 	for (int i=0; i<nLights; i++){
 		sum.x = sum.x + specularRadience[i].x * specularReflection.x * pow(R[i].x * E.x, p);
@@ -59,9 +55,9 @@ void main()
 		sum.z = sum.z + specularRadience[i].z * specularReflection.z * pow(R[i].z * E.z, p);
 	}
 	
-	frag_shaded.x = frag_shaded.x + sum.x;
-	frag_shaded.y = frag_shaded.y + sum.y;
-	frag_shaded.z = frag_shaded.z + sum.z;
+	frag_shaded.x = sum.x * texture(myTexture, frag_texcoord).x;
+	frag_shaded.y = sum.y * texture(myTexture, frag_texcoord).y;
+	frag_shaded.z = sum.z * texture(myTexture, frag_texcoord).z;
 	// --------------------------------------------------------------------------------------------
 	
 }

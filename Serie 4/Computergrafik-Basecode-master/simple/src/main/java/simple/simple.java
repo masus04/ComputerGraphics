@@ -88,16 +88,16 @@ public class simple {
 
 			// TODO: Add light sources
 			Light l = new Light();
-			l.direction = new Vector3f(-1, 0, 0);
-			l.diffuse = new Vector3f(1, 1, 1);
-			l.specular = new Vector3f(1, 1, 1);
+			l.direction = new Vector3f(0, 1, 0);
+			//l.diffuse = new Vector3f(1, 1, 1);
+			//l.specular = new Vector3f(1, 1, 1);
 			sceneManager.addLight(l);
 
 			l = new Light();
 			l.direction = new Vector3f(1, 0, 0);
-			l.diffuse = new Vector3f(1, 1, 1);
-			l.specular = new Vector3f(1, 1, 1);
-			sceneManager.addLight(l);
+			//l.diffuse = new Vector3f(1, 1, 1);
+			//l.specular = new Vector3f(1, 1, 1);
+			//sceneManager.addLight(l);
 
 			// Add the scene to the renderer
 			renderContext.setSceneManager(sceneManager);
@@ -121,7 +121,7 @@ public class simple {
 			
 			customShader = renderContext.makeShader();
 			try {
-				diffuseShader.load("../jrtr/shaders/custom.vert", "../jrtr/shaders/custom.frag");
+				customShader.load("../jrtr/shaders/custom.vert", "../jrtr/shaders/custom.frag");
 			} catch (Exception e) {
 				System.out.print("Problem with shader:\n");
 				System.out.print(e.getMessage());
@@ -235,20 +235,14 @@ public class simple {
 				break;
 			}
 			case 'm': {
+			
+				
 				
 				// Set a material for more complex shading of the shape
 				if (shape.getMaterial() == null) {
-					Material diffuseMaterial = new Material();
-					diffuseMaterial.shader = diffuseShader;
-					diffuseMaterial.texture = renderContext.makeTexture();
-					try {
-						diffuseMaterial.texture.load("../textures/plant.jpg");
-					} catch (Exception ex) {
-						System.out.print("Could not load texture.\n");
-						System.out.print(ex.getMessage());
-					}
 
-					shape.setMaterial(diffuseMaterial);
+					material.shader = diffuseShader;
+					shape.setMaterial(material);
 				} else {
 					shape.setMaterial(null);
 					renderContext.useDefaultShader();
@@ -259,18 +253,8 @@ public class simple {
 			case 'c': {
 				// Set a material for more complex shading of the shape
 				if (shape.getMaterial() == null) {
-
-					Material customMaterial = new Material();
-					customMaterial.shader = customShader;
-					customMaterial.texture = renderContext.makeTexture();
-					try {
-						customMaterial.texture.load("../textures/plant.jpg");
-					} catch (Exception ex) {
-						System.out.print("Could not load texture.\n");
-						System.out.print(ex.getMessage());
-					}
-
-					shape.setMaterial(customMaterial);
+					material.shader = customShader;
+					shape.setMaterial(material);
 				} else {
 					shape.setMaterial(null);
 					renderContext.useDefaultShader();
