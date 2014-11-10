@@ -14,7 +14,8 @@ import javax.vecmath.*;
  * version 3 (or later).
  */
 public class GLRenderContext implements RenderContext {
-
+	
+	private static final int PHONG_EXPONENT = 64;
 	private SceneManagerInterface sceneManager;
 	private GL3 gl;
 
@@ -314,16 +315,16 @@ public class GLRenderContext implements RenderContext {
 					id = gl.glGetUniformLocation(activeShaderID, lightString);
 					if(id!=-1)
 						gl.glUniform4f(id, l.position.x, l.position.y, l.position.z, 0.f);		// Set light position
-					else
-						System.out.print("Could not get location of uniform variable " + lightString + "\n");
+					//else
+					//	System.out.print("Could not get location of uniform variable " + lightString + "\n");
 
 					// Pass diffuse radience to shader, we assume the shader stores it in an array "lightRadience[]"
 					lightString = "diffuseRadience[" + nLights + "]";			
 					id = gl.glGetUniformLocation(activeShaderID, lightString);
 					if(id!=-1)
 						gl.glUniform4f(id, l.diffuse.x, l.diffuse.y, l.diffuse.z, 0.f);		// Set light radience
-					else
-						System.out.print("Could not get location of uniform variable " + lightString + "\n");
+					//else
+					//	System.out.print("Could not get location of uniform variable " + lightString + "\n");
 				
 					
 					nLights++;
@@ -333,16 +334,33 @@ public class GLRenderContext implements RenderContext {
 				id = gl.glGetUniformLocation(activeShaderID, "diffuseReflection");
 				if(id!=-1)
 					gl.glUniform3f(id, m.diffuse.x, m.diffuse.y, m.diffuse.z);		// Set diffuse reflection
-				else
-					System.out.print("Could not get location of uniform variable diffuseReflection\n");
+				//else
+				//	System.out.print("Could not get location of uniform variable diffuseReflection\n");
+
+				// Pass camera position to shader, we assume this is in a variable "nLights" in the shader
+				Vector4f cam = new Vector4f();
+				sceneManager.getCamera().getCameraMatrix().getColumn(3, cam);
+				
+				id = gl.glGetUniformLocation(activeShaderID, "cameraPosition");
+				if(id!=-1)
+					gl.glUniform3f(id, cam.x, cam.y, cam.z);						// Set camera position
+				//else
+				//	System.out.print("Could not get location of uniform variable camera position\n");
 
 				
 				// Pass number of lights to shader, we assume this is in a variable "nLights" in the shader
 				id = gl.glGetUniformLocation(activeShaderID, "nLights");
 				if(id!=-1)
 					gl.glUniform1i(id, nLights);		// Set number of lights
-				else
-					System.out.print("Could not get location of uniform variable nLights\n");
+				//else
+				//	System.out.print("Could not get location of uniform variable nLights\n");
+				
+				// Pass number of lights to shader, we assume this is in a variable "nLights" in the shader
+				id = gl.glGetUniformLocation(activeShaderID, "nLights");
+				if(id!=-1)
+					gl.glUniform1i(id, PHONG_EXPONENT);		// Set number of lights
+				//else
+				//	System.out.print("Could not get location of uniform variable nLights\n");
 			}
 		}
 	}

@@ -16,6 +16,7 @@ public class simple {
 	static RenderContext renderContext;
 	static Shader normalShader;
 	static Shader diffuseShader;
+	static Shader customShader;
 	static Material material;
 	static SimpleSceneManager sceneManager;
 	static Shape shape;
@@ -87,7 +88,7 @@ public class simple {
 			sceneManager.addShape(shape);
 
 			// TODO: add lights
-			
+
 			Light light = new Light();
 			light.position = new Vector3f(0, 2, 0);
 			light.diffuse = new Vector3f(1, 1, 1);
@@ -113,10 +114,26 @@ public class simple {
 				System.out.print(e.getMessage());
 			}
 
+			customShader = renderContext.makeShader();
+			try {
+				customShader.load("../jrtr/shaders/custom.vert", "../jrtr/shaders/custom.frag");
+			} catch (Exception e) {
+				System.out.print("Problem with shader:\n");
+				System.out.print(e.getMessage());
+			}
+
+			// TODO: set shader: 0 = diffuse shader; 1 = custom shader
+			int shader = 1;
+			
+
 			// Make a material that can be used for shading
 			material = new Material();
-			material.shader = diffuseShader;
-			material.texture = renderContext.makeTexture();
+			if (shader == 0)
+				material.shader = diffuseShader;
+			else if (shader == 1)
+				material.shader = customShader;
+			
+				material.texture = renderContext.makeTexture();
 			try {
 				material.texture.load("../textures/plant.jpg");
 			} catch (Exception e) {
