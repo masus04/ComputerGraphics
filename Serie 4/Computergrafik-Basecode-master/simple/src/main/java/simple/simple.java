@@ -86,9 +86,12 @@ public class simple {
 			shape = new Shape(vertexData);
 			sceneManager.addShape(shape);
 
+			// TODO: add lights
+			
 			Light light = new Light();
 			light.position = new Vector3f(0, 2, 0);
 			light.diffuse = new Vector3f(1, 1, 1);
+			sceneManager.addLight(light);
 
 			// Add the scene to the renderer
 			renderContext.setSceneManager(sceneManager);

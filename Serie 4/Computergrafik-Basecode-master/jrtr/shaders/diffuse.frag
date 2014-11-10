@@ -15,8 +15,8 @@ uniform vec3 diffuseReflection;
 
 // Variables passed in from the vertex shader
 in vec2 frag_texcoord;
-in frag_normal;
-in gl_Position;
+in vec3 frag_normal;
+in vec4 gl_Position;
 
 // Output variable, will be written to framebuffer automatically
 out vec4 frag_shaded;
@@ -32,17 +32,20 @@ void main()
 	}
 	
 	// calculate diffuse shading
-	vec3 sum = (0,0,0);
+	vec3 sum;
+	sum.x = 0; sum.y = 0; sum.z=0;
 	
 	for (int i=0; i<nLights; i++){
-		vec4 ndotl = max(dot(frag_normal, normalize(L[i])), 0);
+		float ndotl = max(dot((frag_normal), normalize(vec3 (L[i].x, L[i].y, L[i].z))), 0);
 		
-		sum.x = sum.x + diffuseRadience.x * diffuseReflection.x * ndotl.x;
-		sum.y = sum.y + diffuseRadience.y * diffuseReflection.y * ndotl.y;
-		sum.z = sum.z + diffuseRadience.z * diffuseReflection.z * ndotl.z;
+		sum.x = sum.x + diffuseRadience[i].x * diffuseReflection.x * ndotl;
+		sum.y = sum.y + diffuseRadience[i].y * diffuseReflection.y * ndotl;
+		sum.z = sum.z + diffuseRadience[i].z * diffuseReflection.z * ndotl;
 	}
 	
-	frag_shaded = sum * texture(myTexture, frag_texcoord);
+	frag_shaded.x = sum.x * texture(myTexture, frag_texcoord).x;
+	frag_shaded.y = sum.y * texture(myTexture, frag_texcoord).y;
+	frag_shaded.z = sum.z * texture(myTexture, frag_texcoord).z;
 
 	// The built-in GLSL function "texture" performs the texture lookup
 	//frag_shaded = ndotl * texture(myTexture, frag_texcoord);
