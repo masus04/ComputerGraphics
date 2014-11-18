@@ -2,10 +2,12 @@ package jrtr;
 
 import javax.vecmath.Matrix4f;
 
-public interface GraphNode {
+public abstract class GraphNode {
 	
-	public Matrix4f getTransformation();
+	GraphNode parent;
 	
-	public GraphNode getChildShape(int index);
-	public GraphNode getChildLight(int index);
+	public abstract Matrix4f getTransformation();
+	public abstract GraphShapeNode getChildShape(int index);
+	public abstract GraphLightNode getChildLight(int index);
+	public abstract GraphGroup getChildGroup(int index);
 }

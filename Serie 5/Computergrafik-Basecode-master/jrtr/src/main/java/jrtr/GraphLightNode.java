@@ -6,7 +6,8 @@ public class GraphLightNode extends GraphLeaf{
 
 	Light light;
 	
-	public GraphLightNode(Light light){
+	public GraphLightNode(GraphNode parent, Light light){
+		super(parent);
 		this.light = light;
 	}
 	

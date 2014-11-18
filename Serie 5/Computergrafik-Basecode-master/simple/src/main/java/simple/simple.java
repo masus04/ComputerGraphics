@@ -18,7 +18,7 @@ public class simple
 	static Shader normalShader;
 	static Shader diffuseShader;
 	static Material material;
-	static SimpleSceneManager sceneManager;
+	static GraphSceneManager sceneManager;
 	static Shape shape;
 	static float currentstep, basicstep;
 
@@ -91,9 +91,9 @@ public class simple
 			vertexData.addIndices(indices);
 								
 			// Make a scene manager and add the object
-			sceneManager = new SimpleSceneManager();
+			sceneManager = new GraphSceneManager();
 			shape = new Shape(vertexData);
-			sceneManager.addShape(shape);
+			sceneManager.getRoot().add(shape);
 
 			// Add the scene to the renderer
 			renderContext.setSceneManager(sceneManager);

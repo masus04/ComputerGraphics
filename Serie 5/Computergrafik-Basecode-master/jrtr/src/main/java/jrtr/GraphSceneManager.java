@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 public class GraphSceneManager implements SceneManagerInterface {
 
-	GraphNode root;
+	GraphGroup root;
 	
 	private Camera camera;
 	private Frustum frustum;
@@ -34,6 +34,10 @@ public class GraphSceneManager implements SceneManagerInterface {
 	@Override
 	public Frustum getFrustum() {
 		return frustum;
+	}
+
+	public GraphGroup getRoot() {
+		return root;
 	}
 
 }

@@ -2,14 +2,15 @@ package jrtr;
 
 import java.util.LinkedList;
 
-public abstract class GraphGroup implements GraphNode {
+public abstract class GraphGroup extends GraphNode {
 
 	GraphTransformGroup transformGroup;
 	LinkedList<GraphGroup> groups;
 	LinkedList<GraphShapeNode> shapeNodes;
 	LinkedList<GraphLightNode> lightNodes;
 
-	public GraphGroup() {
+	public GraphGroup(GraphNode parent) {
+		this.parent = parent;
 		shapeNodes = new LinkedList<GraphShapeNode>();
 		lightNodes = new LinkedList<GraphLightNode>();
 	}
@@ -23,24 +24,30 @@ public abstract class GraphGroup implements GraphNode {
 		this.lightNodes = lightNodes;
 	}
 
-	public GraphGroup getGraphGroup(int index) {
-		return groups.get(index);
-	}
-
 	public GraphShapeNode getChildShape(int index) {
-		return shapeNodes.get(index);
+		if (index < shapeNodes.size())
+			return shapeNodes.get(index);
+		else return null;		
 	}
 
 	public GraphLightNode getChildLight(int index) {
-		return lightNodes.get(index);
+		if (index < lightNodes.size())
+			return lightNodes.get(index);
+		else return null;
 	}
 
-	public void add(GraphLightNode light) {
-		lightNodes.add(light);
+	public GraphGroup getChildGroup(int index) {
+		if (index < groups.size())
+			return groups.get(index);
+		else return null;
 	}
 
-	public void add(GraphShapeNode shape) {
-		shapeNodes.add(shape);
+	public void add(Light light) {
+		lightNodes.add(new GraphLightNode(this, light));
+	}
+
+	public void add(Shape shape) {
+		shapeNodes.add(new GraphShapeNode(this, shape));
 	}
 
 	public void add(GraphGroup group) {

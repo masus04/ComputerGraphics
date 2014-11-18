@@ -6,7 +6,8 @@ public class GraphShapeNode extends GraphLeaf {
 
 	Shape shape;
 	
-	public GraphShapeNode(Shape shape){
+	public GraphShapeNode(GraphNode parent, Shape shape){
+		super(parent);
 		this.shape = shape;
 	}
 	

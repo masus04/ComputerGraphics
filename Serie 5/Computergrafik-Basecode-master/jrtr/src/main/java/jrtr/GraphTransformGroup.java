@@ -6,7 +6,8 @@ public class GraphTransformGroup extends GraphGroup{
 
 	Matrix4f transformation;
 	
-	public GraphTransformGroup(Matrix4f transformation){
+	public GraphTransformGroup(GraphNode parent, Matrix4f transformation){
+		super(parent);
 		this.transformation = transformation;
 	}
 	
