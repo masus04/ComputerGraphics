@@ -1,20 +1,16 @@
 package jrtr;
 
+import java.util.LinkedList;
+
 import javax.vecmath.Matrix4f;
 
-public class GraphLightNode extends GraphLeaf{
+public class GraphLightNode extends GraphLeaf {
 
 	Light light;
-	
-	public GraphLightNode(GraphNode parent, Light light){
-		super(parent);
+
+	public GraphLightNode(GraphNode parent, Light light) {
 		this.light = light;
 	}
-	
-	public Light getLight(){
-		return light;
-	}
-
 
 	/**
 	 * returns the position of the light as a Matrix4f
@@ -24,8 +20,12 @@ public class GraphLightNode extends GraphLeaf{
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
 		matrix.setTranslation(light.position);
-		
+
 		return matrix;
+	}
+
+	@Override
+	public void getShapeItems(LinkedList<RenderItem> items, Matrix4f transformation) {
 	}
 
 }

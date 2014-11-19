@@ -1,23 +1,10 @@
 package jrtr;
 
-public abstract class GraphLeaf extends GraphNode {
-	
-	public GraphLeaf(GraphNode parent){
-		this.parent = parent;
-	}
-	
-	@Override
-	public GraphShapeNode getChildShape(int index) {
-		return null;
-	}
+public abstract class GraphLeaf implements GraphNode {
 
 	@Override
-	public GraphLightNode getChildLight(int index) {
-		return null;
+	public boolean isLeaf() {
+		return true;
 	}
-	
-	@Override
-	public GraphGroup getChildGroup(int index) {
-		return null;
-	}
+
 }

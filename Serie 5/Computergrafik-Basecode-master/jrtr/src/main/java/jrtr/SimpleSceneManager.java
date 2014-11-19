@@ -13,7 +13,7 @@ public class SimpleSceneManager implements SceneManagerInterface {
 	private LinkedList<Light> lights;
 	private Camera camera;
 	private Frustum frustum;
-	
+
 	public SimpleSceneManager()
 	{
 		shapes = new LinkedList<Shape>();
@@ -21,60 +21,61 @@ public class SimpleSceneManager implements SceneManagerInterface {
 		camera = new Camera();
 		frustum = new Frustum();
 	}
-	
+
 	public Camera getCamera()
 	{
 		return camera;
 	}
-	
+
 	public Frustum getFrustum()
 	{
 		return frustum;
 	}
-	
+
 	public void addShape(Shape shape)
 	{
 		shapes.add(shape);
 	}
-	
+
 	public void addLight(Light light)
 	{
 		lights.add(light);
 	}
-	
+
 	public Iterator<Light> lightIterator()
 	{
 		return lights.iterator();
 	}
-	
+
 	public SceneManagerIterator iterator()
 	{
 		return new SimpleSceneManagerItr(this);
 	}
-	
+
 	private class SimpleSceneManagerItr implements SceneManagerIterator {
-		
+
+		ListIterator<Shape> itr;
+
 		public SimpleSceneManagerItr(SimpleSceneManager sceneManager)
 		{
 			itr = sceneManager.shapes.listIterator(0);
 		}
-		
+
 		public boolean hasNext()
 		{
 			return itr.hasNext();
 		}
-		
+
 		public RenderItem next()
 		{
 			Shape shape = itr.next();
-			// Here the transformation in the RenderItem is simply the 
-			// transformation matrix of the shape. More sophisticated 
-			// scene managers will set the transformation for the 
+			// Here the transformation in the RenderItem is simply the
+			// transformation matrix of the shape. More sophisticated
+			// scene managers will set the transformation for the
 			// RenderItem differently.
 			return new RenderItem(shape, shape.getTransformation());
 		}
-		
-		ListIterator<Shape> itr;
+
 	}
-	
+
 }

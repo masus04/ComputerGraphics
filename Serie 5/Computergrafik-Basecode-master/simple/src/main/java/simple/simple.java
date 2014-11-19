@@ -93,6 +93,12 @@ public class simple
 			// Make a scene manager and add the object
 			sceneManager = new GraphSceneManager();
 			shape = new Shape(vertexData);
+			
+			// TODO: insert shapes here
+			
+			Cylinder cylinder = new Cylinder(renderContext, 50);
+			shape = cylinder.getShape();
+			
 			sceneManager.getRoot().add(shape);
 
 			// Add the scene to the renderer
@@ -130,7 +136,7 @@ public class simple
 		    Timer timer = new Timer();
 		    basicstep = 0.01f;
 		    currentstep = basicstep;
-		    timer.scheduleAtFixedRate(new AnimationTask(), 0, 10);
+		   // timer.scheduleAtFixedRate(new AnimationTask(), 0, 10);
 		}
 	}
 

@@ -2,9 +2,11 @@ package jrtr;
 
 import java.util.Iterator;
 
+import javax.vecmath.Matrix4f;
+
 public class GraphSceneManager implements SceneManagerInterface {
 
-	GraphGroup root;
+	GraphTransformGroup root;
 	
 	private Camera camera;
 	private Frustum frustum;
@@ -12,12 +14,17 @@ public class GraphSceneManager implements SceneManagerInterface {
 	public GraphSceneManager() {
 		camera = new Camera();
 		frustum = new Frustum();
+		
+		Matrix4f identity = new Matrix4f();
+		identity.setIdentity();
+		
+		root = new GraphTransformGroup(null,identity);
+		
 	}
 	
 	@Override
 	public SceneManagerIterator iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new GraphSceneIterator(root);
 	}
 
 	@Override
@@ -36,7 +43,7 @@ public class GraphSceneManager implements SceneManagerInterface {
 		return frustum;
 	}
 
-	public GraphGroup getRoot() {
+	public GraphTransformGroup getRoot() {
 		return root;
 	}
 
