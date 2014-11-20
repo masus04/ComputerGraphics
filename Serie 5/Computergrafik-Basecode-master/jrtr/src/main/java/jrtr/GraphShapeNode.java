@@ -25,4 +25,9 @@ public class GraphShapeNode extends GraphLeaf {
 	public Matrix4f getTransformation() {
 		return shape.getTransformation();
 	}
+	
+	@Override
+	public void setTransformation(Matrix4f transformation) {
+		shape.setTransformation(transformation);
+	}
 }

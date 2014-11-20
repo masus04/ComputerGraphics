@@ -27,5 +27,10 @@ public class GraphLightNode extends GraphLeaf {
 	@Override
 	public void getShapeItems(LinkedList<RenderItem> items, Matrix4f transformation) {
 	}
+	
+	@Override
+	public void setTransformation(Matrix4f transformation) {
+		// TODO: something usefull
+	}
 
 }

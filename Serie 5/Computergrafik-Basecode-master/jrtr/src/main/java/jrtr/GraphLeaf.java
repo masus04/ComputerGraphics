@@ -7,4 +7,8 @@ public abstract class GraphLeaf implements GraphNode {
 		return true;
 	}
 
+	@Override
+	public GraphGroup getGraphGroup(int index) {
+		return null;
+	}
 }

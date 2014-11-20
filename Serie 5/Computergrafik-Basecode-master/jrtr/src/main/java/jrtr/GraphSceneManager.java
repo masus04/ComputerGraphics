@@ -2,8 +2,6 @@ package jrtr;
 
 import java.util.Iterator;
 
-import javax.vecmath.Matrix4f;
-
 public class GraphSceneManager implements SceneManagerInterface {
 
 	GraphTransformGroup root;
@@ -15,10 +13,7 @@ public class GraphSceneManager implements SceneManagerInterface {
 		camera = new Camera();
 		frustum = new Frustum();
 		
-		Matrix4f identity = new Matrix4f();
-		identity.setIdentity();
-		
-		root = new GraphTransformGroup(identity);
+		root = new GraphTransformGroup();
 		
 	}
 	

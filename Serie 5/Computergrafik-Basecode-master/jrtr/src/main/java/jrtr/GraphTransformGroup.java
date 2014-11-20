@@ -75,7 +75,13 @@ public class GraphTransformGroup extends GraphGroup {
 		return transformation;
 	}
 
+	@Override
 	public void setTransformation(Matrix4f transformation) {
 		this.transformation = transformation;
+	}
+
+	@Override
+	public GraphGroup getGraphGroup(int index) {
+		return groups.get(index);
 	}
 }

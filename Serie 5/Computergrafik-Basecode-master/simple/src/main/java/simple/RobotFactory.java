@@ -11,17 +11,17 @@ public class RobotFactory {
 	private RenderContext renderContext;
 	private float scale;
 
-	public void makeRobot(GraphTransformGroup root, RenderContext renderContext) {
+	public void makeRobot(GraphTransformGroup root, RenderContext renderContext, float scale) {
 		this.renderContext = renderContext;
-		this.scale = 0.5f;
+		this.scale = scale;
 
 		makeTorso(root);
 	}
 
 	private void makeTorso(GraphTransformGroup root) {
-		Cylinder cylinder = new Cylinder(renderContext, 50, 1 * scale, 3 * scale);
+		Cylinder cylinder = new Cylinder(renderContext, (int) (50 * scale), 1 * scale, 3 * scale);
 		root.add(cylinder.getShape());
-
+		
 		makeHead(root);
 		makeArms(root);
 		makeLegs(root);
@@ -58,12 +58,12 @@ public class RobotFactory {
 	private GraphTransformGroup makeArm() {
 		// upper arm
 		GraphTransformGroup upperArm = new GraphTransformGroup();
-		Cylinder cylinder = new Cylinder(renderContext, 50, 0.2f * scale, 1 * scale);
+		Cylinder cylinder = new Cylinder(renderContext, (int) (25 * scale), 0.2f * scale, 1 * scale);
 		upperArm.add(cylinder.getShape());
 
 		// forearm
 		GraphTransformGroup foreArm = new GraphTransformGroup();
-		cylinder = new Cylinder(renderContext, 50, 0.2f * scale, 1 * scale);
+		cylinder = new Cylinder(renderContext, (int) (25 * scale), 0.2f * scale, 1 * scale);
 		foreArm.add(cylinder.getShape());
 
 		foreArm.setTransformation(makeTranslationMatrix(0, -1.25f * scale, 0));
@@ -92,13 +92,13 @@ public class RobotFactory {
 	private GraphTransformGroup makeLeg() {
 		// upper leg
 		GraphTransformGroup upperLeg = new GraphTransformGroup();
-		Cylinder cylinder = new Cylinder(renderContext, 50, 0.33f * scale, 1.25f * scale);
+		Cylinder cylinder = new Cylinder(renderContext, (int) (25 * scale), 0.33f * scale, 1.25f * scale);
 
 		upperLeg.add(cylinder.getShape());
 
 		// lower leg
 		GraphTransformGroup lowerLeg = new GraphTransformGroup();
-		cylinder = new Cylinder(renderContext, 50, 0.33f * scale, 1.25f * scale);
+		cylinder = new Cylinder(renderContext, (int) (25 * scale), 0.33f * scale, 1.25f * scale);
 		lowerLeg.add(cylinder.getShape());
 		lowerLeg.setTransformation(makeTranslationMatrix(0, -1.5f *scale, 0));
 		
