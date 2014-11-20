@@ -6,9 +6,10 @@ import javax.vecmath.Matrix4f;
 
 public class GraphShapeNode extends GraphLeaf {
 
-	Shape shape;
+	private Shape shape;
 	
-	public GraphShapeNode(GraphNode parent, Shape shape){
+	public GraphShapeNode(Shape shape){
+		
 		this.shape = shape;
 	}
 	

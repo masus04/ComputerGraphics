@@ -6,9 +6,9 @@ import javax.vecmath.Matrix4f;
 
 public class GraphLightNode extends GraphLeaf {
 
-	Light light;
+	private Light light;
 
-	public GraphLightNode(GraphNode parent, Light light) {
+	public GraphLightNode(Light light) {
 		this.light = light;
 	}
 

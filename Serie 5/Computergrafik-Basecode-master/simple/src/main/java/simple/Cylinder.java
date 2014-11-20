@@ -4,24 +4,22 @@ import jrtr.*;
 
 public class Cylinder {
 	
-	static RenderContext renderContext;
-	Shape shape;
+	private static RenderContext renderContext;
+	private Shape shape;
 	
 	
-	public Cylinder(RenderContext renderContext, int resolution){
+	public Cylinder(RenderContext renderContext, int resolution, float radius, float height){
 		Cylinder.renderContext = renderContext;
 		
-		shape = initCylinder(resolution);
+		shape = initCylinder(resolution, radius, height);
 	}
 	
 	public Shape getShape(){
 		return shape;
 	}
 	
-	private static Shape initCylinder(int resolution) {
+	private static Shape initCylinder(int resolution, float radius, float height) {
 		int res = resolution;
-		int Radius = 1;
-		int Height = 2;
 
 		float[] positions;
 		float[] colors;
@@ -33,26 +31,26 @@ public class Cylinder {
 
 		for (int i = 0; i < 3 * res; i += 3) {
 			// Upper Circle
-			positions[i] = (float) (Math.cos(i / 3 * 2 * Math.PI / res) * Radius); // x
-			positions[i + 1] = Height / 2; // y
-			positions[i + 2] = (float) (Math.sin(i / 3 * 2 * Math.PI / res) * Radius); // z
+			positions[i] = (float) (Math.cos(i / 3 * 2 * Math.PI / res) * radius); // x
+			positions[i + 1] = height / 2; // y
+			positions[i + 2] = (float) (Math.sin(i / 3 * 2 * Math.PI / res) * radius); // z
 		}
 
 		for (int i = 0; i < 3 * res; i += 3) {
 			// Lower Circle
-			positions[i + (3 * res)] = (float) Math.cos(i / 3 * 2 * Math.PI / res) * Radius;
-			positions[i + 1 + (3 * res)] = -Height / 2;
-			positions[i + 2 + (3 * res)] = (float) Math.sin(i / 3 * 2 * Math.PI / res) * Radius;
+			positions[i + (3 * res)] = (float) Math.cos(i / 3 * 2 * Math.PI / res) * radius;
+			positions[i + 1 + (3 * res)] = -height / 2;
+			positions[i + 2 + (3 * res)] = (float) Math.sin(i / 3 * 2 * Math.PI / res) * radius;
 		}
 
 		// Upper Center
 		positions[6 * res] = 0;
-		positions[6 * res + 1] = Height / 2;
+		positions[6 * res + 1] = height / 2;
 		positions[6 * res + 2] = 0;
 
 		// Lower Center
 		positions[6 * res + 3] = 0;
-		positions[6 * res + 4] = -Height / 2;
+		positions[6 * res + 4] = -height / 2;
 		positions[6 * res + 5] = 0;
 
 		// Colors

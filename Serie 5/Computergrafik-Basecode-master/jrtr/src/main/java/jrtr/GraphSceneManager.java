@@ -18,7 +18,7 @@ public class GraphSceneManager implements SceneManagerInterface {
 		Matrix4f identity = new Matrix4f();
 		identity.setIdentity();
 		
-		root = new GraphTransformGroup(null,identity);
+		root = new GraphTransformGroup(identity);
 		
 	}
 	
