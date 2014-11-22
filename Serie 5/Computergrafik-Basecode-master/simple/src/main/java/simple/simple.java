@@ -44,19 +44,45 @@ public class simple
 		 */
 		public void init(RenderContext r)
 		{
+			// TODO: choose task 1 or 2
+			int task = 2;
+
 			renderContext = r;
 
 			sceneManager = new GraphSceneManager();
 
 			// -------------------------- robot -------------------------- //
-			robotScale = 0.5f;
+			if (task == 1) {
 
-			RobotFactory factory = new RobotFactory();
-			factory.makeRobot(sceneManager.getRoot(), renderContext, robotScale);
+				robotScale = 0.5f;
 
-			sceneManager.getRoot().getTransformation().setTranslation(new Vector3f(3, 0, 0));
+				RobotFactory factory = new RobotFactory();
+				factory.makeRobot(sceneManager.getRoot(), renderContext, robotScale);
 
+				sceneManager.getRoot().getTransformation().setTranslation(new Vector3f(3, 0, 0));
+			}
 			// -------------------------- robot -------------------------- //
+
+			// ------------------------- cuuubes ------------------------- //
+
+			if (task == 2) {
+				Cube cube = new Cube(renderContext);
+				cube.setScale(0.33f);
+
+				Matrix4f translation = new Matrix4f();
+				translation.setIdentity();
+
+				for (int i = -125; i < 125; i += 3) {
+					for (int j = -20; j < 20; j += 3) {
+						Matrix4f trans = new Matrix4f(translation);
+						trans.setTranslation(new Vector3f(i + 0.5f, j, 0));
+
+						GraphShapeNode node = sceneManager.getRoot().add(cube.getShape(), sceneManager.getFrustum());
+						node.setTransformation(trans);
+					}
+				}
+			}
+			// ------------------------- cuuubes ------------------------- //
 
 			// Add the scene to the renderer
 			renderContext.setSceneManager(sceneManager);
@@ -93,20 +119,51 @@ public class simple
 			Timer timer = new Timer();
 			basicstep = 0.01f;
 			currentstep = basicstep;
-			timer.scheduleAtFixedRate(new AnimationTask(), 0, 10);
+			if (task == 1) {
+				timer.scheduleAtFixedRate(new RobotAnimationTask(), 0, 10);
+			}
+			else if (task == 2)
+				timer.scheduleAtFixedRate(new CubesAnimationTask(), 0, 1);
 		}
+	}
+
+	public static class CubesAnimationTask extends TimerTask {
+
+		/*FpsCounter fpsCounter;
+		fpsCounter = new FpsCounter(250);
+		fpsCounter.getFps();*/
+		
+		public CubesAnimationTask(){
+			
+		}
+		
+		@Override
+		public void run() {
+			
+			
+			Matrix4f rotation = new Matrix4f();
+			rotation.rotY(0.001f);
+
+			Matrix4f transformation = sceneManager.getRoot().getTransformation();
+
+			rotation.mul(transformation);
+			sceneManager.getRoot().setTransformation(rotation);
+			
+			renderPanel.getCanvas().repaint();
+		}
+		
 	}
 
 	/**
 	 * A timer task that generates an animation. This task triggers the
 	 * redrawing of the 3D scene every time it is executed.
 	 */
-	public static class AnimationTask extends TimerTask
+	public static class RobotAnimationTask extends TimerTask
 	{
 		int steps, limit;
 		float speed, cycle;
 
-		public AnimationTask() {
+		public RobotAnimationTask() {
 			cycle = 1;
 			speed = 0.01f;
 			limit = (int) (cycle / speed);
@@ -136,7 +193,7 @@ public class simple
 			if (steps > limit)
 				steps = -limit;
 
-			if (0 <= steps && steps < limit) {
+			if (0 < steps && steps < limit) {
 				moveArms(speed);
 				moveLegs(-speed);
 			} else if (-limit < steps && steps < 0) {

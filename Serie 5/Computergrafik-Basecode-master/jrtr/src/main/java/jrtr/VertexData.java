@@ -2,14 +2,12 @@ package jrtr;
 
 import java.util.LinkedList;
 
-
 /**
- * Provides functionality to specify 3D geometry in the form of triangle meshes.
- * {@link VertexData} consists of a list of {@link VertexElement}s.
+ * Provides functionality to specify 3D geometry in the form of triangle meshes. {@link VertexData}
+ * consists of a list of {@link VertexElement}s.
  * 
- * It is an abstract class, use the implementation {@link GLVertexData} or
- * {@link SWVertexData} which should be instantiated via {@link
- * RenderContext#makeVertexData(int)}.
+ * It is an abstract class, use the implementation {@link GLVertexData} or {@link SWVertexData}
+ * which should be instantiated via {@link RenderContext#makeVertexData(int)}.
  */
 public abstract class VertexData {
 
@@ -67,12 +65,9 @@ public abstract class VertexData {
 				vertexElements.addFirst(vertexElement);
 			}
 		} else {
-			System.err
-					.println("Array of '"
-							+ s.name()
-							+ "' has not the correct dimension (must be number of vertices times i).\n"
-							+ "No elements for " + s.name()
-							+ " have been added so far.");
+			System.err.println("Array of '" + s.name()
+					+ "' has not the correct dimension (must be number of vertices times i).\n" + "No elements for "
+					+ s.name() + " have been added so far.");
 		}
 	}
 
@@ -86,6 +81,46 @@ public abstract class VertexData {
 
 	public int[] getIndices() {
 		return indices;
+	}
+
+	/**
+	 * 
+	 * @return an array float[] of positions if they're available or null otherwise.
+	 */
+	public float[] getPositions() {
+		for (VertexElement e : vertexElements) {
+			if (e.getSemantic().equals(Semantic.POSITION))
+				return e.getData();
+		}
+
+		return null;
+	}
+	
+	public float[] getColors() {
+		for (VertexElement e : vertexElements) {
+			if (e.getSemantic().equals(Semantic.COLOR))
+				return e.getData();
+		}
+
+		return null;
+	}
+
+	public float[] getNormals() {
+		for (VertexElement e : vertexElements) {
+			if (e.getSemantic().equals(Semantic.NORMAL))
+				return e.getData();
+		}
+
+		return null;
+	}
+	
+	public float[] getTextCoord() {
+		for (VertexElement e : vertexElements) {
+			if (e.getSemantic().equals(Semantic.TEXCOORD))
+				return e.getData();
+		}
+
+		return null;
 	}
 
 	/**

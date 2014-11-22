@@ -5,6 +5,7 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
+
 import java.awt.Component;
 
 /**
@@ -56,6 +57,7 @@ public abstract class GLRenderPanel implements RenderPanel {
 		{
 		}
 		
+		@SuppressWarnings("unused")
 		public void displayChanged(GLAutoDrawable drawable, boolean modeChanged,
 		    boolean deviceChanged)
 		{

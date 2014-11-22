@@ -14,30 +14,30 @@ public class GraphTransformGroup extends GraphGroup {
 	public GraphTransformGroup() {
 		Matrix4f identity = new Matrix4f();
 		identity.setIdentity();
-		
+
 		this.transformation = identity;
-		
+
 		groups = new LinkedList<GraphTransformGroup>();
 		shapeNodes = new LinkedList<GraphShapeNode>();
 		lightNodes = new LinkedList<GraphLightNode>();
 	}
-	
+
 	public GraphTransformGroup(Matrix4f transformation) {
 		this();
-		
+
 		this.transformation = transformation;
 	}
-	
-	public GraphTransformGroup(GraphTransformGroup transformGroup){
+
+	public GraphTransformGroup(GraphTransformGroup transformGroup) {
 		this.transformation = transformGroup.getTransformation();
 		this.groups = transformGroup.groups;
 		this.shapeNodes = transformGroup.shapeNodes;
 		this.lightNodes = transformGroup.lightNodes;
 	}
-	
+
 	public GraphTransformGroup(Matrix4f transformation, LinkedList<GraphTransformGroup> groups,
 			LinkedList<GraphShapeNode> shapeNodes, LinkedList<GraphLightNode> lightNodes) {
-		
+
 		this.transformation = transformation;
 		this.groups = groups;
 		this.shapeNodes = shapeNodes;
@@ -58,12 +58,30 @@ public class GraphTransformGroup extends GraphGroup {
 		}
 	}
 
-	public void add(Light light) {
-		lightNodes.add(new GraphLightNode(light));
+	public GraphLightNode add(Light light) {
+		GraphLightNode lightNode = new GraphLightNode(light);
+		lightNodes.add(lightNode);
+		return lightNode;
 	}
 
-	public void add(Shape shape) {
-		shapeNodes.add(new GraphShapeNode(shape));
+	public GraphShapeNode add(Shape shape) {
+		GraphShapeNode shapeNode = new GraphShapeNode(shape);
+		shapeNodes.add(shapeNode);
+		return shapeNode;
+	}
+
+	/**
+	 * 
+	 * @param shape		the shape to be added
+	 * @param frustum	the frustum used in the scene
+	 * 
+	 * the shape is only added to the graph if it is located inside the view frustum
+	 */
+	public GraphShapeNode add(Shape shape, Frustum frustum) {
+		GraphShapeNode shapeNode = new GraphShapeNode(shape);
+		if (shapeNode.viewFrustumCulling(frustum))
+			shapeNodes.add(shapeNode);
+		return shapeNode;
 	}
 
 	public void add(GraphTransformGroup group) {
