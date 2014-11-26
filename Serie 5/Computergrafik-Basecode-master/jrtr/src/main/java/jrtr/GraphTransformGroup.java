@@ -72,15 +72,33 @@ public class GraphTransformGroup extends GraphGroup {
 
 	/**
 	 * 
-	 * @param shape		the shape to be added
-	 * @param frustum	the frustum used in the scene
+	 * @param shape
+	 *            the shape to be added
+	 * @param frustum
+	 *            the frustum used in the scene
 	 * 
-	 * the shape is only added to the graph if it is located inside the view frustum
+	 *            the shape is only added to the graph if it is located inside
+	 *            the view frustum
+	 * @param trans
 	 */
-	public GraphShapeNode add(Shape shape, Frustum frustum) {
+	public GraphShapeNode add(Shape shape, SceneManagerInterface sceneManager, Matrix4f trans) {
 		GraphShapeNode shapeNode = new GraphShapeNode(shape);
-		if (shapeNode.viewFrustumCulling(frustum))
+		if (trans == null) {
+			trans = new Matrix4f();
+			trans.setIdentity();
+		}
+
+		shapeNode.setTransformation(trans);
+
+		if (shapeNode.viewFrustumCulling(sceneManager))
 			shapeNodes.add(shapeNode);
+		return shapeNode;
+	}
+
+	public GraphShapeNode add(Shape shape, Matrix4f trans) {
+		GraphShapeNode shapeNode = new GraphShapeNode(shape);
+		shapeNode.setTransformation(trans);
+		shapeNodes.add(shapeNode);
 		return shapeNode;
 	}
 

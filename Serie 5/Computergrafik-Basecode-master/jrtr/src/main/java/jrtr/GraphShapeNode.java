@@ -3,6 +3,7 @@ package jrtr;
 import java.util.LinkedList;
 
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector4f;
 
 public class GraphShapeNode extends GraphLeaf {
 
@@ -36,7 +37,26 @@ public class GraphShapeNode extends GraphLeaf {
 	 * 
 	 * @return true if the Shape lies at least partly inside the view frustum and is therefore displayed
 	 */
-	public boolean viewFrustumCulling(Frustum frustum){
-		return shape.getBoundingBox().isOverlapping(frustum);
+	public boolean viewFrustumCulling(SceneManagerInterface sceneManager){
+		
+		Vector4f balancePoint = calculateBalancePoint();
+		// debug
+		BoundingBox box = shape.getBoundingBox(balancePoint);
+		// /debug
+		return shape.getBoundingBox(balancePoint).isOverlapping(sceneManager);
 	}
+	
+	/**
+	 * 
+	 * @return the balance point in world coordinates
+	 */
+	private Vector4f calculateBalancePoint() {
+		Vector4f balancePoint = new Vector4f();
+		
+		transformation.getColumn(3, balancePoint);
+		
+		return balancePoint;
+	}
+	
+	
 }

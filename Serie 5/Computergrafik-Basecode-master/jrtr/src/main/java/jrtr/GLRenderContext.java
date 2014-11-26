@@ -8,6 +8,8 @@ import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.vecmath.*;
 
+import jogamp.opengl.FPSCounterImpl;
+
 /**
  * Implements a {@link RenderContext} (a renderer) using OpenGL version 3 (or
  * later).
@@ -16,6 +18,7 @@ public class GLRenderContext implements RenderContext {
 
 	private SceneManagerInterface sceneManager;
 	private GL3 gl;
+	FPSCounterImpl counter;
 
 	FpsCounter fpsCounter;
 
@@ -38,7 +41,9 @@ public class GLRenderContext implements RenderContext {
 	 *            this object.
 	 */
 	public GLRenderContext(GLAutoDrawable drawable) {
-		fpsCounter = new FpsCounter(0.25f);
+		fpsCounter = new FpsCounter(2);
+		//counter = new FPSCounterImpl();
+		//counter.setUpdateFPSFrames(counter.DEFAULT_FRAMES_PER_INTERVAL, System.out);
 		
 		// Some OpenGL initialization
 		gl = drawable.getGL().getGL3();
@@ -70,8 +75,8 @@ public class GLRenderContext implements RenderContext {
 	 * method traverses the scene using the scene manager and passes each object
 	 * to the rendering method.
 	 */
-	public void display(GLAutoDrawable drawable) {
-
+	public void display(GLAutoDrawable drawable) {		
+		
 		// Get reference to the OpenGL rendering context
 		gl = drawable.getGL().getGL3();
 
@@ -89,6 +94,10 @@ public class GLRenderContext implements RenderContext {
 
 		// Do some processing at the end of the frame
 		endFrame();
+		
+		fpsCounter.getFps();
+		
+		//counter.tickFPS();
 	}
 
 	/**
@@ -119,10 +128,7 @@ public class GLRenderContext implements RenderContext {
 	 * @param renderItem
 	 *            the object that needs to be drawn
 	 */
-	private void draw(RenderItem renderItem) {
-		
-		fpsCounter.getFps();
-		
+	private void draw(RenderItem renderItem) {		
 		
 		// Set the material of the shape to be rendered
 		setMaterial(renderItem.getShape().getMaterial());

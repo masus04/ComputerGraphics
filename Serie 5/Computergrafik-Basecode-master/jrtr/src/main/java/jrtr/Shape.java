@@ -32,33 +32,14 @@ public class Shape {
 		material = null;
 	}
 
-	public BoundingBox getBoundingBox(){
+	public BoundingBox getBoundingBox(Vector4f balancePoint){
 		if (boundingBox == null){
-			Vector4f balancePoint = calculateBalancePoint();
 			float radius = calculateBoxRadius(balancePoint);
 			
 			boundingBox = new BoundingBox(balancePoint, radius);
 		}
 		
 		return boundingBox;
-	}
-	
-	private Vector4f calculateBalancePoint() {
-		float[] positions = vertexData.getPositions();
-		Vector4f balancePoint = new Vector4f();
-
-		for (int i = 0; i < positions.length - 2; i += 3) {
-			balancePoint.x += positions[i + 0];
-			balancePoint.y += positions[i + 1];
-			balancePoint.z += positions[i + 2];
-		}
-
-		balancePoint.x = balancePoint.x / ((float) positions.length / 3);
-		balancePoint.y = balancePoint.y / ((float) positions.length / 3);
-		balancePoint.z = balancePoint.z / ((float) positions.length / 3);
-		balancePoint.w = 1;
-		
-		return balancePoint;
 	}
 
 	private float calculateBoxRadius(Vector4f balancePoint) {
@@ -67,7 +48,7 @@ public class Shape {
 		Vector4f point = new Vector4f();
 
 		for (int i = 0; i < positions.length - 2; i += 3) {
-			point = new Vector4f(positions[i], positions[i + 1], positions[i + 2], 1);
+			point = new Vector4f(positions[i]+balancePoint.x, positions[i + 1]+balancePoint.y, positions[i + 2]+balancePoint.z, 1);
 			point.sub(balancePoint);
 
 			if (point.length() > maxRadius)

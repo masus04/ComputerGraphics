@@ -2,6 +2,7 @@ package jrtr;
 
 import java.util.LinkedList;
 
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector4f;
 
 public class BoundingBox {
@@ -9,21 +10,24 @@ public class BoundingBox {
 	private Vector4f balancePoint;
 	private float radius;
 
-	public BoundingBox(Vector4f balancePoint, float radius) {
+	public BoundingBox(Vector4f balancePoint, float radius) {		
 		this.balancePoint = balancePoint;
 		this.radius = radius;
 	}
 
 	// TODO
-	public boolean isOverlapping(Frustum frustum) {
-		LinkedList<Plane> planes = calculatePlanes(frustum);
+	public boolean isOverlapping(SceneManagerInterface sceneManager) {
+		
+		Matrix4f cameraMatrix = new Matrix4f(sceneManager.getCamera().getCameraMatrix());
+		
+		LinkedList<Plane> planes = calculatePlanes(sceneManager.getFrustum());
 
 		for (Plane p:planes){
-			if (checkPlane(p))
-				return true;
+			if (!checkPlane(p))
+				return false;
 		}
 		
-		return false;
+		return true;
 	}
 
 	/**
@@ -51,18 +55,31 @@ public class BoundingBox {
 
 		Vector4f edgeVector = new Vector4f((float) (Math.tan(frustum.getVerticalFieldOfView()/2) * frustum.getFarPlane()),
 				0, frustum.getFarPlane(), 0);
+		edgeVector.normalize();
 		
-		plane = new Plane(new Vector4f(edgeVector.x, 0, -edgeVector.z, 0), 0);
+		plane = new Plane(new Vector4f(edgeVector.z, 0, -edgeVector.x, 0), 0);
 		planes.add(plane); // right plane
 		
-		plane = new Plane(new Vector4f(-edgeVector.x, 0, -edgeVector.z, 0), 0);
-		planes.add(plane); // left plane
+		plane = new Plane(new Vector4f(0, edgeVector.z, -edgeVector.x, 0), 0);
+		planes.add(plane); // upper plane
+		
+		plane = new Plane(new Vector4f(-edgeVector.z, 0, -edgeVector.x, 0), 0);
+		//planes.add(plane); // left plane
+
+		plane = new Plane(new Vector4f(0, -edgeVector.z, -edgeVector.x, 0), 0);
+		planes.add(plane); // lower plane
+		
+		/* plane = new Plane(new Vector4f(edgeVector.x, 0, -edgeVector.z, 0), 0);
+		planes.add(plane); // right plane
 
 		plane = new Plane(new Vector4f(0, edgeVector.x, -edgeVector.z, 0), 0);
 		planes.add(plane); // upper plane
+		
+		plane = new Plane(new Vector4f(-edgeVector.x, 0, -edgeVector.z, 0), 0);
+		//planes.add(plane); // left plane
 
 		plane = new Plane(new Vector4f(0, -edgeVector.x, -edgeVector.z, 0), 0);
-		planes.add(plane); // lower plane
+		//planes.add(plane); // lower plane */
 
 		return planes;
 	}

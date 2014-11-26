@@ -16,10 +16,10 @@ public class FpsCounter {
 		double deltaT = System.currentTimeMillis() - StartTime;
 		frameCounter++;
 
+		fps = (int) (frameCounter / (deltaT / 1000));
+
 		if (deltaT > displayFrequency)
 			init();
-
-		fps = (int) (frameCounter / (deltaT / displayFrequency));
 	}
 
 	private void init() {

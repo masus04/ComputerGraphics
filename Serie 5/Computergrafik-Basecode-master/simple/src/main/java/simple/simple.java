@@ -72,13 +72,12 @@ public class simple
 				Matrix4f translation = new Matrix4f();
 				translation.setIdentity();
 
-				for (int i = -125; i < 125; i += 3) {
-					for (int j = -20; j < 20; j += 3) {
+				for (int i = 1; i < 200; i += 3) {
+					for (int j = 1; j < 200; j += 3) {
 						Matrix4f trans = new Matrix4f(translation);
-						trans.setTranslation(new Vector3f(i + 0.5f, j, 0));
+						trans.setTranslation(new Vector3f(i + 0.5f, j, 0));		// world coordinates
 
-						GraphShapeNode node = sceneManager.getRoot().add(cube.getShape(), sceneManager.getFrustum());
-						node.setTransformation(trans);
+						GraphShapeNode node = sceneManager.getRoot().add(cube.getShape(), sceneManager,  trans);
 					}
 				}
 			}
@@ -123,35 +122,34 @@ public class simple
 				timer.scheduleAtFixedRate(new RobotAnimationTask(), 0, 10);
 			}
 			else if (task == 2)
-				timer.scheduleAtFixedRate(new CubesAnimationTask(), 0, 1);
+				timer.scheduleAtFixedRate(new CubesAnimationTask(), 0, 10);
 		}
 	}
 
 	public static class CubesAnimationTask extends TimerTask {
 
-		/*FpsCounter fpsCounter;
-		fpsCounter = new FpsCounter(250);
-		fpsCounter.getFps();*/
-		
-		public CubesAnimationTask(){
-			
+		/*
+		 * FpsCounter fpsCounter; fpsCounter = new FpsCounter(250);
+		 * fpsCounter.getFps();
+		 */
+
+		public CubesAnimationTask() {
+
 		}
-		
+
 		@Override
 		public void run() {
-			
-			
 			Matrix4f rotation = new Matrix4f();
-			rotation.rotY(0.001f);
+			rotation.rotY(0.01f);
 
 			Matrix4f transformation = sceneManager.getRoot().getTransformation();
 
 			rotation.mul(transformation);
 			sceneManager.getRoot().setTransformation(rotation);
-			
+
 			renderPanel.getCanvas().repaint();
 		}
-		
+
 	}
 
 	/**
