@@ -32,31 +32,6 @@ public class Shape {
 		material = null;
 	}
 
-	public BoundingBox getBoundingBox(Vector4f balancePoint){
-		if (boundingBox == null){
-			float radius = calculateBoxRadius(balancePoint);
-			
-			boundingBox = new BoundingBox(balancePoint, radius);
-		}
-		
-		return boundingBox;
-	}
-
-	private float calculateBoxRadius(Vector4f balancePoint) {
-		float[] positions = vertexData.getPositions();
-		float maxRadius = 0;
-		Vector4f point = new Vector4f();
-
-		for (int i = 0; i < positions.length - 2; i += 3) {
-			point = new Vector4f(positions[i]+balancePoint.x, positions[i + 1]+balancePoint.y, positions[i + 2]+balancePoint.z, 1);
-			point.sub(balancePoint);
-
-			if (point.length() > maxRadius)
-				maxRadius = point.length();
-		}
-		return maxRadius;
-	}
-
 	public VertexData getVertexData()
 	{
 		return vertexData;
@@ -89,6 +64,49 @@ public class Shape {
 	public Material getMaterial()
 	{
 		return material;
+	}
+
+	public void calculateBoundingSphere(Matrix4f completeTransformation, SceneManagerInterface sceneManager) {
+		if (boundingBox == null){
+			Matrix4f cTransformation = new Matrix4f(sceneManager.getCamera().getCameraMatrix());
+			cTransformation.mul(completeTransformation);	// complete transformation in CAMERA COORDINATES
+			cTransformation.mul(sceneManager.getFrustum().getProjectionMatrix(), cTransformation);
+			
+			float radius = calculateBoxRadius(calculateBalancePoint(cTransformation));
+			
+			boundingBox = new BoundingBox(calculateBalancePoint(cTransformation), radius);	// already in camCoord
+		}
+	}
+
+	private float calculateBoxRadius(Vector4f balancePoint) {
+		float[] positions = vertexData.getPositions();
+		float maxRadius = 0;
+		Vector4f point = new Vector4f();
+
+		for (int i = 0; i < positions.length - 2; i += 3) {
+			point = new Vector4f(positions[i]+balancePoint.x, positions[i + 1]+balancePoint.y, positions[i + 2]+balancePoint.z, 1);
+			point.sub(balancePoint);
+
+			if (point.length() > maxRadius)
+				maxRadius = point.length();
+		}
+		return maxRadius;
+	}
+	
+	/**
+	 * 
+	 * @return the balance point in world coordinates
+	 */
+	private Vector4f calculateBalancePoint(Matrix4f transformation) {
+		Vector4f balancePoint = new Vector4f();
+		
+		transformation.getColumn(3, balancePoint);
+		
+		return balancePoint;
+	}
+
+	public boolean checkBoundingSphere(SceneManagerInterface sceneManager) {
+		return boundingBox.isOverlapping(sceneManager);
 	}
 	
 }

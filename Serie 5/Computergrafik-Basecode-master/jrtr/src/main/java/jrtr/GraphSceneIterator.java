@@ -9,8 +9,10 @@ public class GraphSceneIterator implements SceneManagerIterator {
 	private GraphGroup root;
 	private LinkedList<RenderItem> RenderItems;
 	private int nextIndex;
+	SceneManagerInterface sceneManager;
 
-	public GraphSceneIterator(GraphGroup root) {
+	public GraphSceneIterator(GraphGroup root, SceneManagerInterface sceneManager) {
+		this.sceneManager = sceneManager;
 		this.root = root;
 		nextIndex = 0;
 
@@ -42,7 +44,21 @@ public class GraphSceneIterator implements SceneManagerIterator {
 
 		root.getShapeItems(items, identity);
 
+		// TODO: culling on/ off
+		boolean culling = false;
+		if (culling) {
+			for (int i = 0; i < items.size(); i++) {
+				if (!checkBoundingSphere(items.get(i)))
+					items.remove(i);
+			}
+		}
 		return items;
+	}
+
+	private boolean checkBoundingSphere(RenderItem i) {
+		i.getShape().calculateBoundingSphere(i.getT(), sceneManager);
+
+		return i.getShape().checkBoundingSphere(sceneManager);
 	}
 
 }

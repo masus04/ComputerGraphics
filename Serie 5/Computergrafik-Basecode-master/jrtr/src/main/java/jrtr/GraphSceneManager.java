@@ -19,7 +19,7 @@ public class GraphSceneManager implements SceneManagerInterface {
 	
 	@Override
 	public SceneManagerIterator iterator() {
-		return new GraphSceneIterator(root);
+		return new GraphSceneIterator(root, this);
 	}
 
 	@Override

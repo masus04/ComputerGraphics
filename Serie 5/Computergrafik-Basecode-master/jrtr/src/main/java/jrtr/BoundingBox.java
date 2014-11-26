@@ -10,20 +10,22 @@ public class BoundingBox {
 	private Vector4f balancePoint;
 	private float radius;
 
+	/**
+	 * 
+	 * @param balancePoint in CAMERA COORDINATES
+	 * @param radius
+	 */
 	public BoundingBox(Vector4f balancePoint, float radius) {		
 		this.balancePoint = balancePoint;
 		this.radius = radius;
 	}
 
-	// TODO
 	public boolean isOverlapping(SceneManagerInterface sceneManager) {
-		
-		Matrix4f cameraMatrix = new Matrix4f(sceneManager.getCamera().getCameraMatrix());
 		
 		LinkedList<Plane> planes = calculatePlanes(sceneManager.getFrustum());
 
 		for (Plane p:planes){
-			if (!checkPlane(p))
+			if (!isInsidePlane(p))
 				return false;
 		}
 		
@@ -35,7 +37,7 @@ public class BoundingBox {
 	 * @param p the plane being tested for collision
 	 * @return true if the bounding box collides with the plane
 	 */
-	private boolean checkPlane(Plane p) {
+	private boolean isInsidePlane(Plane p) {
 		float distance = balancePoint.dot(p.normal) - p.distance;
 		
 		return distance < radius;
@@ -44,11 +46,10 @@ public class BoundingBox {
 	/**
 	 * only works for aspectRatio = 1
 	 */
-
 	private LinkedList<Plane> calculatePlanes(Frustum frustum) {
 		LinkedList<Plane> planes = new LinkedList<BoundingBox.Plane>();
 
-		Plane plane = new Plane(new Vector4f(0, 0, 1, 0), frustum.getNearPlane());
+		Plane plane = new Plane(new Vector4f(0, 0, -1, 0), frustum.getNearPlane());
 		planes.add(plane); // near plane
 		plane = new Plane(new Vector4f((0), 0, 1, 0), frustum.getFarPlane());
 		planes.add(plane); // far plane
@@ -64,30 +65,16 @@ public class BoundingBox {
 		planes.add(plane); // upper plane
 		
 		plane = new Plane(new Vector4f(-edgeVector.z, 0, -edgeVector.x, 0), 0);
-		//planes.add(plane); // left plane
+		planes.add(plane); // left plane
 
 		plane = new Plane(new Vector4f(0, -edgeVector.z, -edgeVector.x, 0), 0);
 		planes.add(plane); // lower plane
-		
-		/* plane = new Plane(new Vector4f(edgeVector.x, 0, -edgeVector.z, 0), 0);
-		planes.add(plane); // right plane
-
-		plane = new Plane(new Vector4f(0, edgeVector.x, -edgeVector.z, 0), 0);
-		planes.add(plane); // upper plane
-		
-		plane = new Plane(new Vector4f(-edgeVector.x, 0, -edgeVector.z, 0), 0);
-		//planes.add(plane); // left plane
-
-		plane = new Plane(new Vector4f(0, -edgeVector.x, -edgeVector.z, 0), 0);
-		//planes.add(plane); // lower plane */
 
 		return planes;
 	}
 
 	private class Plane {
-		@SuppressWarnings("unused")
 		public Vector4f normal;
-		@SuppressWarnings("unused")
 		public float distance;
 
 		public Plane(Vector4f normal, float distance) {

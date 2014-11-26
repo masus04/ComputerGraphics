@@ -72,12 +72,12 @@ public class simple
 				Matrix4f translation = new Matrix4f();
 				translation.setIdentity();
 
-				for (int i = 1; i < 200; i += 3) {
-					for (int j = 1; j < 200; j += 3) {
+				for (int i = -100; i < 100; i += 3) {
+					for (int j = -100; j < 100; j += 3) {
 						Matrix4f trans = new Matrix4f(translation);
 						trans.setTranslation(new Vector3f(i + 0.5f, j, 0));		// world coordinates
 
-						GraphShapeNode node = sceneManager.getRoot().add(cube.getShape(), sceneManager,  trans);
+						GraphShapeNode node = sceneManager.getRoot().add(cube.getShape(), trans);
 					}
 				}
 			}
