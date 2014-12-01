@@ -108,7 +108,7 @@ public class BezierCurve {
 			normal.sub(r1, r0);
 			
 			points.add(x);
-			normals.add(normal);
+			normals.add(new Vector4f(-normal.y, normal.x, normal.z, normal.w));
 		}
 
 		private Vector4f linearLinterpolation(float t, Vector4f p1, Vector4f p2) {

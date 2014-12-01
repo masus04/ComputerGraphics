@@ -5,7 +5,7 @@ import javax.vecmath.Vector4f;
 
 public class BezierRotation {
 	
-	BezierCurve[] bCurves;
+	private BezierCurve[] bCurves;
 	
 	/**
 	 * as many control points as can be fitted into segments are taken into
@@ -24,6 +24,8 @@ public class BezierRotation {
 		}
 	}
 
+	
+	
 	private Vector4f[] rotate(Vector4f[] controlPoints, float angle) {		
 		Matrix4f rotation = new Matrix4f();
 		rotation.rotX((float) (Math.PI * 2.0 * angle));
