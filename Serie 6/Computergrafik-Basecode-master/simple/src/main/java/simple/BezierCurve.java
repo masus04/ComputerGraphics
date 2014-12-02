@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 import javax.vecmath.Vector4f;
 
-import jrtr.Shape;
-
 public class BezierCurve {
-	private ArrayList<Segment> segments = new ArrayList<Segment>();
+	private ArrayList<Segment> segments;
 	private ArrayList<Vector4f> points;
 	private ArrayList<Vector4f> normals;
 
@@ -20,11 +18,12 @@ public class BezierCurve {
 	 * @param controlPoints
 	 *            the control points for the whole curve
 	 */
-	public BezierCurve(int nPoints, Vector4f[] controlPoints) {
+	public BezierCurve(int nPoints, ArrayList<Vector4f> controlPoints) {
+		segments = new ArrayList<Segment>();
 
-		for (int i = 0; i < controlPoints.length - 3; i += 4) {
-			segments.add(new Segment(controlPoints[i], controlPoints[i + 1], controlPoints[i + 2],
-					controlPoints[i + 3]));
+		for (int i = 0; i < controlPoints.size() - 3; i += 4) {
+			segments.add(new Segment(controlPoints.get(i), controlPoints.get(i + 1), controlPoints.get(i + 2),
+					controlPoints.get(i + 3)));
 		}
 
 		calculatePoints(nPoints);
@@ -33,15 +32,15 @@ public class BezierCurve {
 	private void calculatePoints(int nPoints) {
 		for (Segment s : segments)
 			s.calculatePoints(nPoints);
-		
+
 		concatinateSegments();
 	}
 
 	private void concatinateSegments() {
 		points = new ArrayList<Vector4f>();
 		normals = new ArrayList<Vector4f>();
-		
-		for (Segment s : segments){
+
+		for (Segment s : segments) {
 			points.addAll(s.getPoints());
 			normals.addAll(s.getNormals());
 		}
@@ -50,12 +49,12 @@ public class BezierCurve {
 	private Vector4f mul(Vector4f v, float f) {
 		return new Vector4f(v.x * f, v.y * f, v.z * f, v.w);
 	}
-	
-	public ArrayList<Vector4f> getPoints(){
+
+	public ArrayList<Vector4f> getPoints() {
 		return points;
 	}
-	
-	public ArrayList<Vector4f> getNormals(){
+
+	public ArrayList<Vector4f> getNormals() {
 		return normals;
 	}
 
@@ -71,28 +70,25 @@ public class BezierCurve {
 			this.p3 = p3;
 		}
 
-		public void calculatePoints(int nPoints) {
-			points = new ArrayList<Vector4f>();
-
-			for (float i = 1 / nPoints; i < 1; i += 1 / nPoints)
-				deCasteljau(i);
-		}
-
 		public ArrayList<Vector4f> getPoints() {
 			return points;
 		}
-		
-		public ArrayList<Vector4f> getNormals(){
+
+		public ArrayList<Vector4f> getNormals() {
 			return normals;
 		}
-		
-		/**
-		 * 
-		 * @param t
-		 *            the parameter on the curve segment
-		 * calculates the x value for the parameter t on the curve segment
-		 */
-		private void deCasteljau(float t) {
+
+		public void calculatePoints(int nPoints) {
+			points = new ArrayList<Vector4f>();
+			normals = new ArrayList<Vector4f>();
+
+			for (float i = 0; i < nPoints; i++)
+				deCasteljau(i, nPoints);
+		}
+
+		private void deCasteljau(float i, float nPoints) {
+			float t = i / (nPoints-1);
+
 			Vector4f q0, q1, q2, r0, r1, x, normal;
 
 			q0 = linearLinterpolation(t, p0, p1);
@@ -106,7 +102,7 @@ public class BezierCurve {
 
 			normal = new Vector4f();
 			normal.sub(r1, r0);
-			
+
 			points.add(x);
 			normals.add(new Vector4f(-normal.y, normal.x, normal.z, normal.w));
 		}

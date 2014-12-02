@@ -3,21 +3,20 @@ package simple;
 import jrtr.*;
 
 public class Cylinder {
-	
+
 	private static RenderContext renderContext;
 	private Shape shape;
-	
-	
-	public Cylinder(RenderContext renderContext, int resolution, float radius, float height){
+
+	public Cylinder(RenderContext renderContext, int resolution, float radius, float height) {
 		Cylinder.renderContext = renderContext;
-		
+
 		shape = initCylinder(resolution, radius, height);
 	}
-	
-	public Shape getShape(){
+
+	public Shape getShape() {
 		return shape;
 	}
-	
+
 	private static Shape initCylinder(int resolution, float radius, float height) {
 		int res = resolution;
 
@@ -79,7 +78,7 @@ public class Cylinder {
 
 		// Indices
 
-		indices = new int[12 * res];
+		indices = new int[(3 + 3 + 6) * res];
 
 		// Top Circle
 

@@ -1,9 +1,14 @@
 package simple;
 
 import jrtr.*;
+
 import javax.swing.*;
+
 import java.awt.event.*;
+
 import javax.vecmath.*;
+
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -90,9 +95,17 @@ public class simple
 
 			vertexData.addIndices(indices);
 								
-			// Make a scene manager and add the object
+			// TODO: Make a scene manager and add the object
 			sceneManager = new SimpleSceneManager();
-			shape = new Shape(vertexData);
+			
+			ArrayList<Vector4f> controlPoints = new ArrayList<Vector4f>();
+			controlPoints.add(new Vector4f(0,0,0,1));
+			controlPoints.add(new Vector4f(1,0,0,1));
+			controlPoints.add(new Vector4f(1,2,0,1));
+			controlPoints.add(new Vector4f(0,2,0,1));
+			
+			BezierRotation bRotation = new BezierRotation(100, controlPoints, 100, renderContext);
+			shape = bRotation.getShape();
 			sceneManager.addShape(shape);
 
 			// Add the scene to the renderer
@@ -144,12 +157,14 @@ public class simple
 		{
 			// Update transformation by rotating with angle "currentstep"
     		Matrix4f t = shape.getTransformation();
-    		Matrix4f rotX = new Matrix4f();
-    		rotX.rotX(currentstep);
-    		Matrix4f rotY = new Matrix4f();
-    		rotY.rotY(currentstep);
-    		t.mul(rotX);
-    		t.mul(rotY);
+    		Matrix4f rot = new Matrix4f();
+    		
+    		rot.rotX(currentstep);    		
+    		t.mul(rot);
+    		
+    		rot.rotY(currentstep);
+    		t.mul(rot);
+    		
     		shape.setTransformation(t);
     		
     		// Trigger redrawing of the render window
