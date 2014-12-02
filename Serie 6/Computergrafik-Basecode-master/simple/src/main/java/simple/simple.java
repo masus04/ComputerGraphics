@@ -102,9 +102,14 @@ public class simple
 			controlPoints.add(new Vector4f(0,0,0,1));
 			controlPoints.add(new Vector4f(1,0,0,1));
 			controlPoints.add(new Vector4f(1,2,0,1));
-			controlPoints.add(new Vector4f(0,2,0,1));
+			controlPoints.add(new Vector4f(0.5f,2,0,1));
 			
-			BezierRotation bRotation = new BezierRotation(100, controlPoints, 100, renderContext);
+			controlPoints.add(new Vector4f(0.5f,2,0,1));
+			controlPoints.add(new Vector4f(1,2,0,1));
+			controlPoints.add(new Vector4f(1,4,0,1));
+			controlPoints.add(new Vector4f(0,4,0,1));
+			
+			BezierRotation bRotation = new BezierRotation(30, controlPoints, 30, renderContext);
 			shape = bRotation.getShape();
 			sceneManager.addShape(shape);
 

@@ -31,6 +31,7 @@ public class BezierRotation {
 	 */
 	public BezierRotation(int nPoints, ArrayList<Vector4f> controlPoints, int nRotations, RenderContext renderContext) {
 		bCurve = new BezierCurve(nPoints, controlPoints);
+		int nSegments = controlPoints.size()/4 %4;
 
 		// bCurves = new ArrayList<BezierCurve>();
 
@@ -50,13 +51,14 @@ public class BezierRotation {
 		if (!test) {
 			concatinateCurves(nRotations);
 			calculateColors(nPoints, nRotations);
-			calculateIndices(nPoints, nRotations);
-			createShape(nRotations * nPoints, renderContext);
+			calculateIndices(nPoints, nRotations, nSegments);
+			createShape(points.length/3, renderContext);
 		}
 	}
 
 	private void test(BezierCurve bCurve, int nPoints, RenderContext renderContext) {
 		bCurve.getPoints().add(new Vector4f(0, 1, 0, 1));
+		bCurve.getNormals().add(new Vector4f(-1,0,0,0));
 
 		points = toBArray(bCurve.getPoints());
 		colors = new float[points.length];
@@ -66,7 +68,7 @@ public class BezierRotation {
 		for (int i = 0; i < colors.length; i++)
 			colors[i] = 1;
 
-		VertexData vData = renderContext.makeVertexData(nPoints + 1);
+		VertexData vData = renderContext.makeVertexData(points.length/3);
 
 		vData.addElement(points, VertexData.Semantic.POSITION, 3);
 		vData.addElement(colors, VertexData.Semantic.COLOR, 3);
@@ -118,7 +120,7 @@ public class BezierRotation {
 	 * set all colors to white
 	 */
 	private void calculateColors(int nPoints, int nRotations) {
-		this.colors = new float[nPoints * nRotations * 3];
+		this.colors = new float[points.length];
 
 		for (int i = 0; i < colors.length; i++) {
 			colors[i] = 1;
@@ -126,19 +128,19 @@ public class BezierRotation {
 	}
 
 	// TODO: not yet finished
-	private void calculateIndices(int nPoints, int nRotations) {
+	private void calculateIndices(int nPoints, int nRotations, int nSegments) {
 		ArrayList<Integer> indices = new ArrayList<Integer>();
 
 		for (int j = 0; j < nRotations; j++) {
-			for (int i = 0; i < 6 * (nPoints - 1); i += 6) {
+			for (int i = 0; i < 6 * (nPoints *nSegments - 1); i += 6) {
 
-				indices.add((i / 6 + (j * nPoints)));
-				indices.add(((i / 6 + (j * nPoints)) + 1 + (nPoints)) % ((nPoints) * nRotations));
-				indices.add(((i / 6 + (j * nPoints)) + (nPoints)) % ((nPoints) * nRotations));
+				indices.add((i / 6 + (j * nPoints * nSegments)));
+				indices.add(((i / 6 + (j * nPoints * nSegments)) + 1 + (nPoints * nSegments)) % ((nPoints * nSegments) * nRotations));
+				indices.add(((i / 6 + (j * nPoints * nSegments)) + (nPoints * nSegments)) % ((nPoints * nSegments) * nRotations));
 
-				indices.add((i / 6 + (j * nPoints)));
-				indices.add(((i / 6 + (j * nPoints)) + 1) % ((nPoints) * nRotations));
-				indices.add(((i / 6 + (j * nPoints) + 1) + (nPoints)) % ((nPoints) * nRotations));
+				indices.add((i / 6 + (j * nPoints * nSegments)));
+				indices.add(((i / 6 + (j * nPoints * nSegments)) + 1) % ((nPoints * nSegments) * nRotations));
+				indices.add(((i / 6 + (j * nPoints * nSegments) + 1) + (nPoints * nSegments)) % ((nPoints * nSegments) * nRotations));
 			}
 		}
 		this.indices = toIArray(indices);
