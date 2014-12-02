@@ -9,7 +9,7 @@ import javax.vecmath.Vector4f;
 
 public class BezierRotation {
 
-	private ArrayList<BezierCurve> bCurves;
+	private BezierCurve bCurve;
 	private float[] points;
 	private float[] colors;
 	private float[] normals;
@@ -30,21 +30,25 @@ public class BezierRotation {
 	 *            the control points for the whole curve
 	 */
 	public BezierRotation(int nPoints, ArrayList<Vector4f> controlPoints, int nRotations, RenderContext renderContext) {
-		bCurves = new ArrayList<BezierCurve>();
+		bCurve = new BezierCurve(nPoints, controlPoints);
+
+		// bCurves = new ArrayList<BezierCurve>();
 
 		// TODO: set test variable
 		boolean test = false;
 
-		for (int i = 0; i < nRotations; i++) {
-			bCurves.add(new BezierCurve(nPoints, rotateArray(controlPoints, ((float) i) / ((float) nRotations))));
-		}
+		/*
+		 * for (int i = 0; i < nRotations; i++) { bCurves.add(new
+		 * BezierCurve(nPoints, rotateArray(controlPoints, ((float) i) /
+		 * ((float) nRotations)))); }
+		 */
 
 		if (test) {
-			test(bCurves.get(0), nPoints, renderContext);
+			test(bCurve, nPoints, renderContext);
 		}
 
 		if (!test) {
-			concatinateCurves();
+			concatinateCurves(nRotations);
 			calculateColors(nPoints, nRotations);
 			calculateIndices(nPoints, nRotations);
 			createShape(nRotations * nPoints, renderContext);
@@ -92,14 +96,19 @@ public class BezierRotation {
 	 * collects all points and normals from the existing curves and stores them
 	 * in the points and normals member arrays.
 	 */
-	private void concatinateCurves() {
+	private void concatinateCurves(int nRotations) {
 		ArrayList<Vector4f> points = new ArrayList<Vector4f>();
 		ArrayList<Vector4f> normals = new ArrayList<Vector4f>();
 
-		for (BezierCurve c : bCurves) {
+		for (int i = 0; i < nRotations; i++) {
+			points.addAll(rotateArray(bCurve.getPoints(), ((float) i) / ((float) nRotations)));
+			normals.addAll(rotateArray(bCurve.getNormals(), ((float) i) / ((float) nRotations)));
+		}
+
+		/*for (BezierCurve c : bCurves) {
 			points.addAll(c.getPoints());
 			normals.addAll(c.getNormals());
-		}
+		}*/
 
 		this.points = toBArray(points);
 		this.normals = toBArray(normals);
@@ -111,7 +120,7 @@ public class BezierRotation {
 	private void calculateColors(int nPoints, int nRotations) {
 		this.colors = new float[nPoints * nRotations * 3];
 
-		for (int i = 0; i < colors.length; i++){
+		for (int i = 0; i < colors.length; i++) {
 			colors[i] = 1;
 		}
 	}
@@ -123,11 +132,11 @@ public class BezierRotation {
 		for (int j = 0; j < nRotations; j++) {
 			for (int i = 0; i < 6 * (nPoints - 1); i += 6) {
 
-				indices.add((i / 6 + (j * nPoints)) );
+				indices.add((i / 6 + (j * nPoints)));
 				indices.add(((i / 6 + (j * nPoints)) + 1 + (nPoints)) % ((nPoints) * nRotations));
 				indices.add(((i / 6 + (j * nPoints)) + (nPoints)) % ((nPoints) * nRotations));
 
-				indices.add((i / 6 + (j * nPoints)) );
+				indices.add((i / 6 + (j * nPoints)));
 				indices.add(((i / 6 + (j * nPoints)) + 1) % ((nPoints) * nRotations));
 				indices.add(((i / 6 + (j * nPoints) + 1) + (nPoints)) % ((nPoints) * nRotations));
 			}
@@ -146,11 +155,14 @@ public class BezierRotation {
 		shape = new Shape(vData);
 	}
 
-	private ArrayList<Vector4f> rotateArray(ArrayList<Vector4f> controlPoints, float angle) {
+	/**
+	 * @return a rotated array by 1/angle. the original array is not changed
+	 */
+	private ArrayList<Vector4f> rotateArray(ArrayList<Vector4f> vectors, float angle) {
 
 		ArrayList<Vector4f> results = new ArrayList<Vector4f>();
 
-		for (Vector4f v : controlPoints) {
+		for (Vector4f v : vectors) {
 			results.add(rotate(v, angle));
 		}
 

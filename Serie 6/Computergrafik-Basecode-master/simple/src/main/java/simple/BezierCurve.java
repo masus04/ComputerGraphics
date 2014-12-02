@@ -60,8 +60,7 @@ public class BezierCurve {
 
 	public class Segment {
 		private Vector4f p0, p1, p2, p3;
-		private ArrayList<Vector4f> points;
-		private ArrayList<Vector4f> normals;
+		private ArrayList<Vector4f> points, normals;
 
 		public Segment(Vector4f p0, Vector4f p1, Vector4f p2, Vector4f p3) {
 			this.p0 = p0;
@@ -101,7 +100,7 @@ public class BezierCurve {
 			x = linearLinterpolation(t, r0, r1);
 
 			normal = new Vector4f();
-			normal.sub(r1, r0);
+			normal.sub(r0, r1);
 
 			points.add(x);
 			normals.add(new Vector4f(-normal.y, normal.x, normal.z, normal.w));
