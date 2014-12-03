@@ -111,6 +111,8 @@ public class simple
 			
 			BezierRotation bRotation = new BezierRotation(30, controlPoints, 30, renderContext);
 			shape = bRotation.getShape();
+			//shape = new Shape(vertexData);
+			
 			sceneManager.addShape(shape);
 
 			// Add the scene to the renderer
@@ -138,7 +140,7 @@ public class simple
 			material.shader = diffuseShader;
 			material.texture = renderContext.makeTexture();
 			try {
-				material.texture.load("../textures/plant.jpg");
+				material.texture.load("../textures/wood.jpg");
 			} catch(Exception e) {				
 				System.out.print("Could not load texture.\n");
 				System.out.print(e.getMessage());
