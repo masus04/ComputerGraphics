@@ -6,10 +6,10 @@ import jrtr.VertexData;
 
 public class Torus {
 
-	private Shape shape;
+	private static Shape shape;
 	
 	public Torus(RenderContext renderContext){
-		initTorus(3, 1, 50, renderContext);
+		initTorus(3, 1, 10, renderContext);
 	}
 	
 	public Shape getShape(){
@@ -28,7 +28,7 @@ public class Torus {
 
 		vertexData.addIndices(indices);
 
-		Shape shape = new Shape(vertexData);
+		shape = new Shape(vertexData);
 
 		return shape;
 	}

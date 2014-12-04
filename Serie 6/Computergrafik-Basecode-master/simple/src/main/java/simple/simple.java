@@ -26,7 +26,9 @@ public class simple
 	static SimpleSceneManager sceneManager;
 	static Shape shape;
 	static float currentstep, basicstep;
-
+	static int task;
+	static MeshData meshData;
+	
 	/**
 	 * An extension of {@link GLRenderPanel} or {@link SWRenderPanel} to provide
 	 * a call-back function for initialization. Here we construct a simple 3D
@@ -100,7 +102,7 @@ public class simple
 			// TODO: Make a scene manager and add the object
 			sceneManager = new SimpleSceneManager();
 
-			int task = 2;
+			task = 2;
 
 			if (task == 0) {
 				shape = new Shape(vertexData);
@@ -125,7 +127,20 @@ public class simple
 				sceneManager.addShape(shape);
 			}
 
-			if (task == 2) {
+			if (task == 2){
+				Torus torus = new Torus(renderContext);
+				
+				shape = torus.getShape();
+				
+				MeshData meshData = new MeshData(shape.getVertexData(), renderContext);
+				meshData.loop();
+				
+				shape = new Shape(meshData.getVertexData());
+				
+				sceneManager.addShape(shape);
+			}
+			
+			if (task == 3) {
 				Scene scene = new Scene(renderContext);
 
 				for (Shape s : scene.getShapes())
@@ -167,7 +182,7 @@ public class simple
 			Timer timer = new Timer();
 			basicstep = 0.01f;
 			currentstep = basicstep;
-			if (task == 0 || task == 1)
+			if (task == 0 || task == 1 || task == 2)
 				timer.scheduleAtFixedRate(new AnimationTask(), 0, 10);
 		}
 	}
@@ -178,8 +193,22 @@ public class simple
 	 */
 	public static class AnimationTask extends TimerTask
 	{
+		int counter;
+		
+		public AnimationTask(){
+			counter = 0;
+		}
+		
 		public void run()
 		{
+			// subdivision
+			if (task == 2){
+				counter++;
+				if (counter % 100 == 0)
+					;//meshData.loop();
+			}
+		
+			
 			// Update transformation by rotating with angle "currentstep"
 			Matrix4f t = shape.getTransformation();
 			Matrix4f rot = new Matrix4f();
