@@ -45,7 +45,7 @@ public class GraphSceneIterator implements SceneManagerIterator {
 		root.getShapeItems(items, identity);
 
 		// TODO: culling on/ off
-		boolean culling = false;
+		boolean culling = true;
 		if (culling) {
 			for (int i = 0; i < items.size(); i++) {
 				if (!checkBoundingSphere(items.get(i)))

@@ -27,7 +27,6 @@ public class simple
 	static Shape shape;
 	static float currentstep, basicstep;
 	static int task;
-	static MeshData meshData;
 	
 	/**
 	 * An extension of {@link GLRenderPanel} or {@link SWRenderPanel} to provide
@@ -103,6 +102,9 @@ public class simple
 			sceneManager = new SimpleSceneManager();
 
 			task = 2;
+			
+			// Add the scene to the renderer
+			renderContext.setSceneManager(sceneManager);
 
 			if (task == 0) {
 				shape = new Shape(vertexData);
@@ -133,7 +135,7 @@ public class simple
 				shape = torus.getShape();
 				
 				MeshData meshData = new MeshData(shape.getVertexData(), renderContext);
-				meshData.loop();
+				//meshData.loop();
 				
 				shape = new Shape(meshData.getVertexData());
 				
@@ -145,10 +147,10 @@ public class simple
 
 				for (Shape s : scene.getShapes())
 					sceneManager.addShape(s);
+			
 			}
 
-			// Add the scene to the renderer
-			renderContext.setSceneManager(sceneManager);
+			
 
 			// Load some more shaders
 			normalShader = renderContext.makeShader();
@@ -204,8 +206,22 @@ public class simple
 			// subdivision
 			if (task == 2){
 				counter++;
-				if (counter % 100 == 0)
-					;//meshData.loop();
+				if (counter % 500 == 0){
+					
+					MeshData meshData = new MeshData(shape.getVertexData(), renderContext);
+					meshData.loop();
+					
+					Matrix4f t = shape.getTransformation();
+					
+					shape = new Shape(meshData.getVertexData());
+					
+					shape.setTransformation(t);
+					
+					sceneManager = new SimpleSceneManager();
+					sceneManager.addShape(shape);
+					
+					renderContext.setSceneManager(sceneManager);
+				}
 			}
 		
 			

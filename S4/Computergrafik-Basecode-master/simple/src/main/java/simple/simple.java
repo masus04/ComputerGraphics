@@ -14,7 +14,7 @@ import java.util.TimerTask;
 public class simple {
 	static RenderPanel renderPanel;
 	static RenderContext renderContext;
-	static Shader normalShader, diffuseShader, phongShader;
+	static Shader normalShader, diffuseShader, phongShader, customShader;
 	static Material material;
 	static SimpleSceneManager sceneManager;
 	static Shape shape;
@@ -79,40 +79,54 @@ public class simple {
 					20, 22, 23, 20, 21, 22 };	// bottom face
 
 			vertexData.addIndices(indices);
-
-			//TODO: init shapes
 			shape = new Shape(vertexData); // cube
 
 			int setting = 1;
-			
+
 			// Make a scene manager and add the object
 			sceneManager = new SimpleSceneManager();
-			if (setting == 0)
-				sceneManager.addShape(shape);
 
-			if (setting == 1){
-				sceneManager.addShape(shape);
-				
-				Cylinder cylinder = new Cylinder(1, 1, 50, renderContext, 2, 0, 0);
-				shape = new Shape(cylinder.makeCylinder());
-				
-				sceneManager.addShape(shape);
-			}
-			
 			// TODO: Add Lights
-			
 
 			if (setting == 0 || setting == 1) {
 				Light light = new Light();
-				light.position = new Vector3f(10, 0, 0);
+				light.position = new Vector3f(3, 0, 2);
 				light.diffuse = new Vector3f(1, 0, 0);
 				light.specular = new Vector3f(1, 0, 0);
 				sceneManager.addLight(light);
 
 				light = new Light();
-				light.position = new Vector3f(0, 0, 10);
+				light.position = new Vector3f(0, 0, 3);
 				sceneManager.addLight(light);
 			}
+
+			if (setting == 2) {
+				Light light = new Light();
+				light.position = new Vector3f(3, 0, 0);
+				light.diffuse = new Vector3f(1, 0, 0);
+				light.specular = new Vector3f(1, 0, 0);
+				sceneManager.addLight(light);
+
+				light = new Light();
+				light.position = new Vector3f(0, 0, 3);
+				light.diffuse = new Vector3f(1, 1, 1);
+				light.specular = new Vector3f(1, 1, 1);
+				sceneManager.addLight(light);
+			}
+			
+			if (setting == 3) {
+				Light light = new Light();
+				light.position = new Vector3f(3, 0, 2);
+				light.diffuse = new Vector3f(1, 0, 0);
+				light.specular = new Vector3f(1, 0, 0);
+				//sceneManager.addLight(light);
+
+				light = new Light();
+				light.position = new Vector3f(0, 0, 3);
+				sceneManager.addLight(light);
+			}
+			
+			
 			// Add the scene to the renderer
 			renderContext.setSceneManager(sceneManager);
 
@@ -133,13 +147,33 @@ public class simple {
 				System.out.print(e.getMessage());
 			}
 
+			phongShader = renderContext.makeShader();
+			try {
+				phongShader.load("../jrtr/shaders/phong.vert", "../jrtr/shaders/phong.frag");
+			} catch (Exception e) {
+				System.out.print("Problem with shader:\n");
+				System.out.print(e.getMessage());
+			}
+			
+			customShader = renderContext.makeShader();
+			try {
+				customShader.load("../jrtr/shaders/custom.vert", "../jrtr/shaders/custom.frag");
+			} catch (Exception e) {
+				System.out.print("Problem with shader:\n");
+				System.out.print(e.getMessage());
+			}
+
 			// TODO: Set Material
 
 			// Make a material that can be used for shading
 			material = new Material();
-			material.shininess = 64;
-			if (setting == 0) {
+			material.shininess = 16;
+			if (setting == 0 || setting == 1) {
 				material.shader = diffuseShader;
+			} else if (setting == 2) {
+				material.shader = phongShader;
+			} else if (setting == 3){
+				material.shader = customShader;
 			}
 			material.texture = renderContext.makeTexture();
 			try {
@@ -148,12 +182,80 @@ public class simple {
 				System.out.print("Could not load texture.\n");
 				System.out.print(e.getMessage());
 			}
+			
+			Material plant = new Material();
+			plant.shininess = 16;
+			if (setting == 0 || setting == 1) {
+				plant.shader = diffuseShader;
+			} else if (setting == 2) {
+				plant.shader = phongShader;
+			} else if (setting == 3){
+				plant.shader = customShader;
+			}
+			plant.texture = renderContext.makeTexture();
+			try {
+				plant.texture.load("../textures/plant.jpg");
+			} catch (Exception e) {
+				System.out.print("Could not load texture.\n");
+				System.out.print(e.getMessage());
+			}
+			
+			Material wood = new Material();
+			wood.shininess = 16;
+			if (setting == 0 || setting == 1) {
+				wood.shader = diffuseShader;
+			} else if (setting == 2) {
+				wood.shader = phongShader;
+			} else if (setting == 3){
+				wood.shader = customShader;
+			}
+			wood.texture = renderContext.makeTexture();
+			try {
+				wood.texture.load("../textures/wood.jpg");
+			} catch (Exception e) {
+				System.out.print("Could not load texture.\n");
+				System.out.print(e.getMessage());
+			}
+			
+			//TODO: init shapes
+			
+			if (setting == 0){
+				sceneManager.addShape(shape);
+				shape.setMaterial(material);
+			} else if (setting == 1) {
+				Shape cube = shape;
+				cube.setMaterial(plant);
+				sceneManager.addShape(shape); // cube
+				
+				
+				Cylinder cylinder = new Cylinder(1, 1, 50, renderContext, 3, 1, 1);
+				shape = new Shape(cylinder.makeCylinder());
+				shape.setMaterial(wood);
+				sceneManager.addShape(shape);
+			}
+
+			else if (setting == 2) {
+				sceneManager.addShape(shape);
+			}
+			
+			else if (setting == 3){
+				Shape cube = shape;
+				cube.setMaterial(plant);
+				sceneManager.addShape(shape); // cube
+				
+				
+				Cylinder cylinder = new Cylinder(1, 1, 50, renderContext, 3, 1, 1);
+				shape = new Shape(cylinder.makeCylinder());
+				shape.setMaterial(wood);
+				sceneManager.addShape(shape);
+			}
 
 			// Register a timer task
 			Timer timer = new Timer();
 			basicstep = 0.01f;
 			currentstep = basicstep;
 			timer.scheduleAtFixedRate(new AnimationTask(), 0, 10);
+			
 		}
 	}
 

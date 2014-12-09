@@ -282,6 +282,7 @@ public class MeshData {
 	 *            the vertex
 	 * @return all directly connected vertices
 	 */
+	@SuppressWarnings("unused")
 	private List<Vertex> findVertices(Vertex v) {
 		List<Edge> edges = findEdges(v);
 		List<Vertex> list = new ArrayList<Vertex>(edges.size());
@@ -359,88 +360,95 @@ public class MeshData {
 	public void loop() {
 		// TODO: this is the part you should implement :-)
 
-		ArrayList<Float> vertices = new ArrayList<Float>();
-		
-		
-		for (int i = 0; i < faceTable.size(); i++) {
-			subdivision(faceTable.get(i), vertices);
-		}
-
-		createVertexData();
-	}
-
-	private void subdivision(Face f, ArrayList<Float> vertices) {
-
-		List<Vertex> newVertices = new ArrayList<Vertex>();
-		List<Vertex> oldVertices = getVertices(f);
-		List<Edge> oldEdges = findEdges(f);
-
 		// create new Vertices
-		for (int i = 0; i < oldEdges.size(); i++) {
-			newVertices.add(divideNewVertices(oldEdges.get(i)));
-		}
-		
-		for (int i=0; i< vertexTable.size(); i++){
-			oldVertices.add(divideOldVertices(vertexTable.get(i)));
+		for (int i = 0; i < edgeTable.size(); i++) {
+			divideNewVertices(edgeTable.get(i));
 		}
 
-		// putting it back together.. is a bitch
+		for (int i = 0; i < vertexTable.size(); i++) {
+			smoothOldVertices(vertexTable.get(i));
+		}
 
-		// ---------------------------------------------
-
-		/*
-		 * List<Vertex> newVertices = new ArrayList<Vertex>(); List<Edge>
-		 * oldEdges = findEdges(f); List<Edge> newEdges = new ArrayList<Edge>();
-		 * List<Face> newFaces = new ArrayList<Face>();
-		 * 
-		 * for (int i = 0; i< oldEdges.size(); i++){
-		 * newVertices.add(subdivision(oldEdges.get(i))); }
-		 * 
-		 * newEdges.add(new Edge(vertexTable.size(), vertexTable.size()+1));
-		 * newEdges.add(new Edge(vertexTable.size(), vertexTable.size()+2));
-		 * newEdges.add(new Edge(vertexTable.size()+1, vertexTable.size()+2));
-		 * 
-		 * newFaces.add(new Face(newEdges.get(0))); newFaces.add(new
-		 * Face(newEdges.get(1))); newFaces.add(new Face(newEdges.get(2)));
-		 * newFaces.add(new Face(edge));
-		 * 
-		 * newEdges.get(0).f1 = newFaces.get(0); newEdges.get(0).f2 =
-		 * newFaces.get(0);
-		 * 
-		 * 
-		 * vertexTable.addAll(newVertices); edgeTable.addAll(newEdges);
-		 * faceTable.addAll(newFaces);
-		 */
+		createNewVertexData();
 	}
 
-	private Vertex divideNewVertices(Edge e) {
+	private void divideNewVertices(Edge e) {
 		Vertex vertex;
 
-		Vector3f tmp, position, color, normal;
+		List<Vertex> vertices = getRelevantVertices(e);
 
-		tmp = new Vector3f(vertexTable.get(e.v1).position);
+		vertex = divideNewVertex(e, vertices);
+
+		// TODO: implement color and normals
+
+		vertexTable.add(vertex);
+
+	}
+
+	private List<Vertex> getRelevantVertices(Edge e) {
+		List<Vertex> vertices = new ArrayList<Vertex>();
+		vertices.add(new Vertex(vertexTable.get(e.v1)));
+		vertices.add(new Vertex(vertexTable.get(e.v2)));
+		vertices.add(new Vertex(vertexTable.get(findOppositeVertices(e, 0))));
+		vertices.add(new Vertex(vertexTable.get(findOppositeVertices(e, 1))));
+
+		return vertices;
+	}
+
+	private Vertex divideNewVertex(Edge e, List<Vertex> vertices) {
+		Vertex vertex;
+		Vector3f tmp, position, color;
+
+		// ----- Position -----
+
+		tmp = vertices.get(0).position;
 		tmp.scale(3.0f / 8.0f);
 
 		position = tmp;
 
-		tmp = new Vector3f(vertexTable.get(e.v2).position);
+		tmp = vertices.get(1).position;
 		tmp.scale(3.0f / 8.0f);
 
 		position.add(tmp);
 
-		tmp = new Vector3f(vertexTable.get(findOppositeVertices(e, 0)).position);
+		tmp = vertices.get(2).position;
 		tmp.scale(1.0f / 8.0f);
 
 		position.add(tmp);
 
-		tmp = new Vector3f(vertexTable.get(findOppositeVertices(e, 1)).position);
+		tmp = vertices.get(3).position;
 		tmp.scale(1.0f / 8.0f);
 
 		position.add(tmp);
+
+		// ----- Color -----
+
+		tmp = vertices.get(0).color;
+		tmp.scale(3.0f / 8.0f);
+
+		color = tmp;
+
+		tmp = vertices.get(1).color;
+		tmp.scale(3.0f / 8.0f);
+
+		color.add(tmp);
+
+		tmp = vertices.get(2).color;
+		tmp.scale(1.0f / 8.0f);
+
+		color.add(tmp);
+
+		tmp = vertices.get(3).color;
+		tmp.scale(1.0f / 8.0f);
+
+		color.add(tmp);
 
 		vertex = new Vertex(position);
+		vertex.newPosition = position;
+		vertex.color = color;
 
-		// TODO: implement color and normals
+		vertex.edge = e;
+		e.vMid = vertexTable.size();
 		return vertex;
 	}
 
@@ -465,6 +473,31 @@ public class MeshData {
 
 	}
 
+	private void smoothOldVertices(Vertex vertex) {
+
+		List<Vertex> adjecant = findVertices(vertex);
+
+		int n = adjecant.size();
+		float B = 3.0f / 16.0f;
+
+		if (n > 3)
+			B = 3.0f / (8 * n);
+
+		Vector3f sum = new Vector3f(vertex.position);
+		sum.scale(1.0f - n * B);
+
+		Vector3f tmp;
+		for (Vertex a : adjecant) {
+			tmp = new Vector3f(a.position);
+			tmp.scale(B);
+
+			sum.add(tmp);
+		}
+
+		vertex.newPosition = sum;
+	}
+
+	@SuppressWarnings("unused")
 	private ArrayList<Vertex> getVertices(Face f) {
 		ArrayList<Vertex> vertices = new ArrayList<Vertex>();
 		List<Integer> indices = findVertices(f);
@@ -474,15 +507,104 @@ public class MeshData {
 
 		return vertices;
 	}
-	
-	private Vertex divideOldVertices(Vertex vertex) {
-		// TODO Auto-generated method stub
-		return null;
+
+	private void createNewVertexData() {
+
+		List<Integer> newIndices = new ArrayList<Integer>();
+
+		for (Face f : faceTable) {
+			// calculate 4 set of indices per face
+			List<Edge> edges = findEdges(f);
+
+			addIndices(edges.get(0), edges.get(1), newIndices);
+			addIndices(edges.get(1), edges.get(2), newIndices);
+			addIndices(edges.get(2), edges.get(0), newIndices);
+
+			// 4th face in the middle
+			for (Edge e : edges)
+				newIndices.add(e.vMid);
+		}
+
+		float[] positions = toPArray(vertexTable);
+		float[] colors = toCArray(vertexTable);
+		int[] indices = toIArray(newIndices);
+
+		// DEBUG ONLY
+		//float[] colors = new float[positions.length];
+		//for (int i = 0; i < colors.length; i++){
+		//	colors[i] = 1;
+		//}
+		// DEBUG ONLY
+
+		VertexData vertexData = renderContext.makeVertexData(positions.length / 3);
+
+		vertexData.addElement(positions, VertexData.Semantic.POSITION, 3);
+		vertexData.addElement(colors, VertexData.Semantic.COLOR, 3);
+		vertexData.addIndices(indices);
+
+		this.vertexData = vertexData;
+	}
+
+	private float[] toPArray(List<Vertex> list) {
+		float[] floats = new float[list.size() * 3];
+
+		int i = 0;
+		for (Vertex v : list) {
+			floats[i + 0] = v.newPosition.x;
+			floats[i + 1] = v.newPosition.y;
+			floats[i + 2] = v.newPosition.z;
+
+			i += 3;
+		}
+
+		return floats;
+	}
+
+	private float[] toCArray(List<Vertex> list) {
+		float[] floats = new float[list.size() * 3];
+
+		int i = 0;
+		for (Vertex v : list) {
+			floats[i + 0] = v.color.x;
+			floats[i + 1] = v.color.y;
+			floats[i + 2] = v.color.z;
+
+			i += 3;
+		}
+
+		return floats;
+	}
+
+	private int[] toIArray(List<Integer> newIndices) {
+
+		int[] indices = new int[newIndices.size()];
+
+		for (int i = 0; i < indices.length; i++)
+			indices[i] = newIndices.get(i);
+
+		return indices;
+	}
+
+	// calculates 3 indices: the midpoint of e1, e2 and the corner the two share together, and adds them to newIndices
+	private void addIndices(Edge edge1, Edge edge2, List<Integer> newIndices) {
+		newIndices.add(edge1.vMid);
+		newIndices.add(getCommonPoint(edge1, edge2));
+		newIndices.add(edge2.vMid);
+	}
+
+	private int getCommonPoint(Edge edge1, Edge edge2) {
+
+		if (edge1.v1 == edge2.v1)
+			return edge1.v1;
+		else if (edge1.v1 == edge2.v2)
+			return edge1.v1;
+		else
+			return edge1.v2;
 	}
 
 	// -------------- Classes for Edges, Vertices and Faces --------------
 	protected class Edge {
-		protected int v1, v2;
+		protected int v1, v2, vMid;
 		protected Face f1, f2;
 		// e0 shares v1 and f1, e1 shares v2 and f1, e2 shares v1 and f2 and e3
 		// shares v2 and f2 with this edge
@@ -591,7 +713,7 @@ public class MeshData {
 	}
 
 	protected class Vertex {
-		protected Vector3f position;
+		protected Vector3f position, newPosition;
 		protected Vector3f color;
 		protected Vector3f normal;
 		protected Vector2f texCoord;

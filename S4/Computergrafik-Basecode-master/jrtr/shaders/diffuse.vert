@@ -42,7 +42,7 @@ void main()
 	for (int i = 0; i < nLights; i++) {
 		// Calculate the light distance and direction to the vertex.
 		//float distance = length(lightPosition[i] - position);
-		vec4 lightVector = normalize(lightPosition[i] - position);
+		vec4 lightVector = normalize(lightPosition[i] - modelview * position);
 		 
 		ndotl = max(dot(modelview * vec4(normal,0), lightVector), 0.0);
 		 

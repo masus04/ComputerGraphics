@@ -14,9 +14,9 @@ public class Scene {
 		this.renderContext = renderContext;
 
 		shapes = new ArrayList<Shape>();
-		//shapes.add(createBottle());
+		shapes.add(createBottle());
 		
-		shapes.add(createCandle());
+		//shapes.add(createCandle());
 	}
 
 	private Shape createBottle() {

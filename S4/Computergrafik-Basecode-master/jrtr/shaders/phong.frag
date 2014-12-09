@@ -33,16 +33,16 @@ void main()
 {		
 	vec3 lightSum, lightDiffuse, lightSpecular;
 	vec4 position = modelview * frag_position;
-	vec3 normal = frag_normal;
+	vec3 normal = normalize(frag_normal);
 
 	for (int i = 0; i < nLights; i++) {
-		vec4 lightVector = normalize(lightPosition[i] - position);
+		vec4 lightVector = (lightPosition[i] - position);
 		 
 		float ndotl = max(dot(modelview * vec4(normal,0), lightVector), 0.0);
 		
 		vec4 R = reflect(-lightVector, modelview * vec4(normal,0));
 		vec4 e = normalize(vec4(centerOfProjection,0) - position);
-		float Rep = pow(max(dot(R, e), 0.0), materialShininess);
+		float Rep = pow(max(dot(normalize(R), e), 0.0), materialShininess);
 		 
 		lightDiffuse += (lightColorDiffuse[i] * materialColorDiffuse * ndotl);
 		lightSpecular += (lightColorSpecular[i] * materialColorSpecular * Rep);
