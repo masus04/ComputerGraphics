@@ -27,7 +27,8 @@ public class simple
 	static Shape shape;
 	static float currentstep, basicstep;
 	static int task;
-	
+	static MeshData meshData;
+
 	/**
 	 * An extension of {@link GLRenderPanel} or {@link SWRenderPanel} to provide
 	 * a call-back function for initialization. Here we construct a simple 3D
@@ -98,19 +99,17 @@ public class simple
 
 			vertexData.addIndices(indices);
 
-			// TODO: Make a scene manager and add the object
+			// Make a scene manager and add the object
 			sceneManager = new SimpleSceneManager();
-
-			task = 2;
-			
-			// Add the scene to the renderer
 			renderContext.setSceneManager(sceneManager);
+
+			task = 3;
 
 			if (task == 0) {
 				shape = new Shape(vertexData);
 				sceneManager.addShape(shape);
 			}
-			
+
 			if (task == 1) {
 				ArrayList<Vector4f> controlPoints = new ArrayList<Vector4f>();
 				controlPoints.add(new Vector4f(0, 0, 0, 1));
@@ -129,28 +128,40 @@ public class simple
 				sceneManager.addShape(shape);
 			}
 
-			if (task == 2){
-				Torus torus = new Torus(renderContext);
-				
+			if (task == 2 || task == 4) {
+				Torus torus = new Torus(3, 1, 8, renderContext);
 				shape = torus.getShape();
-				
-				MeshData meshData = new MeshData(shape.getVertexData(), renderContext);
-				//meshData.loop();
-				
-				shape = new Shape(meshData.getVertexData());
-				
+
+				/*
+				 * try { shape = new Shape(ObjReader.read(
+				 * "C:/Users/Masus04/workspace/ComputerGraphics/Serie 6/Computergrafik-Basecode-master/obj/teapot.obj"
+				 * , 1, renderContext)); } catch (Exception e) {
+				 * System.out.println("could not read object"); }
+				 */
+
+				meshData = new MeshData(shape.getVertexData(), renderContext);
+				// meshData.loop();
+
+				// shape = new Shape(meshData.getVertexData());
+
 				sceneManager.addShape(shape);
 			}
-			
+
 			if (task == 3) {
 				Scene scene = new Scene(renderContext);
 
 				for (Shape s : scene.getShapes())
 					sceneManager.addShape(s);
-			
-			}
 
-			
+				/*Light light = new Light();
+				light.direction = new Vector3f(0, 0, 10);
+				sceneManager.addLight(light);
+
+				light = new Light();
+				light.direction = new Vector3f(0, 10, 0);
+				sceneManager.addLight(light);
+				 */
+			}
 
 			// Load some more shaders
 			normalShader = renderContext.makeShader();
@@ -184,7 +195,7 @@ public class simple
 			Timer timer = new Timer();
 			basicstep = 0.01f;
 			currentstep = basicstep;
-			if (task == 0 || task == 1 || task == 2)
+			if (task == 0 || task == 1 || task == 2 || task == 4)
 				timer.scheduleAtFixedRate(new AnimationTask(), 0, 10);
 		}
 	}
@@ -196,35 +207,31 @@ public class simple
 	public static class AnimationTask extends TimerTask
 	{
 		int counter;
-		
-		public AnimationTask(){
+
+		public AnimationTask() {
 			counter = 0;
 		}
-		
+
 		public void run()
 		{
 			// subdivision
-			if (task == 2){
+			if (task == 4) {
 				counter++;
-				if (counter % 500 == 0){
-					
-					MeshData meshData = new MeshData(shape.getVertexData(), renderContext);
-					meshData.loop();
-					
+				if (counter % 500 == 0) {
+
+					meshData = new MeshData(shape.getVertexData(), renderContext);
+
 					Matrix4f t = shape.getTransformation();
-					
-					shape = new Shape(meshData.getVertexData());
-					
+					shape = meshData.loop();
 					shape.setTransformation(t);
-					
+
 					sceneManager = new SimpleSceneManager();
 					sceneManager.addShape(shape);
-					
+
 					renderContext.setSceneManager(sceneManager);
 				}
 			}
-		
-			
+
 			// Update transformation by rotating with angle "currentstep"
 			Matrix4f t = shape.getTransformation();
 			Matrix4f rot = new Matrix4f();
@@ -319,6 +326,18 @@ public class simple
 					renderContext.useDefaultShader();
 				}
 				break;
+			}
+			case ' ': {
+				Matrix4f t = shape.getTransformation();
+
+				shape = meshData.loop();
+
+				shape.setTransformation(t);
+
+				sceneManager = new SimpleSceneManager();
+				sceneManager.addShape(shape);
+
+				renderContext.setSceneManager(sceneManager);
 			}
 			}
 

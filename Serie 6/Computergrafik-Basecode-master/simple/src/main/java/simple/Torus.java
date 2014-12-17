@@ -8,8 +8,17 @@ public class Torus {
 
 	private static Shape shape;
 
+	static public Shape createTorus(float RMajor, float RMinor, int res, RenderContext renderContext){
+		
+		return initTorus(RMajor, RMinor, res, renderContext);
+	}
+	
 	public Torus(RenderContext renderContext) {
-		initTorus(3, 1, 10, renderContext);
+		this(3, 1, 8, renderContext);
+	}
+	
+	public Torus(float RMajor, float RMinor, int res, RenderContext renderContext) {
+		initTorus(RMajor, RMinor, res, renderContext);
 	}
 
 	public Shape getShape() {
@@ -64,12 +73,10 @@ public class Torus {
 		return colors;
 	}
 	
-	private static float[] calculateTorusNormals(int res){
-		
-		
-		
+	/*private static float[] calculateTorusNormals(int res){
+		// TODO:		
 		return null;
-	}
+	}*/
 
 	private static int[] calculateTorusIndices(int res) {
 		int[] indices = new int[6 * res * res];

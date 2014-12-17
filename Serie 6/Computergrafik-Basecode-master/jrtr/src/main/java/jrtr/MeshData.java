@@ -282,7 +282,6 @@ public class MeshData {
 	 *            the vertex
 	 * @return all directly connected vertices
 	 */
-	@SuppressWarnings("unused")
 	private List<Vertex> findVertices(Vertex v) {
 		List<Edge> edges = findEdges(v);
 		List<Vertex> list = new ArrayList<Vertex>(edges.size());
@@ -356,8 +355,9 @@ public class MeshData {
 	/**
 	 * Subdivide with the Loop-algorithm. This results in a smoother shape that
 	 * consists of triangles
+	 * @return the looped Shape
 	 */
-	public void loop() {
+	public Shape loop() {
 		// TODO: this is the part you should implement :-)
 
 		// create new Vertices
@@ -369,7 +369,10 @@ public class MeshData {
 			smoothOldVertices(vertexTable.get(i));
 		}
 
-		createNewVertexData();
+		
+		createMesh(createNewVertexData());
+		
+		return new Shape(this.vertexData);
 	}
 
 	private void divideNewVertices(Edge e) {
@@ -397,9 +400,10 @@ public class MeshData {
 
 	private Vertex divideNewVertex(Edge e, List<Vertex> vertices) {
 		Vertex vertex;
-		Vector3f tmp, position, color;
+		Vector3f tmp, position, color, normal;
+		Vector2f texCoord;
 
-		// ----- Position -----
+		// ----- Position ----- //
 
 		tmp = vertices.get(0).position;
 		tmp.scale(3.0f / 8.0f);
@@ -421,34 +425,91 @@ public class MeshData {
 
 		position.add(tmp);
 
-		// ----- Color -----
-
-		tmp = vertices.get(0).color;
-		tmp.scale(3.0f / 8.0f);
-
-		color = tmp;
-
-		tmp = vertices.get(1).color;
-		tmp.scale(3.0f / 8.0f);
-
-		color.add(tmp);
-
-		tmp = vertices.get(2).color;
-		tmp.scale(1.0f / 8.0f);
-
-		color.add(tmp);
-
-		tmp = vertices.get(3).color;
-		tmp.scale(1.0f / 8.0f);
-
-		color.add(tmp);
-
 		vertex = new Vertex(position);
 		vertex.newPosition = position;
-		vertex.color = color;
 
 		vertex.edge = e;
 		e.vMid = vertexTable.size();
+
+		// ----- Color ----- //
+		if (vertices.get(0).normal != null) {
+
+			tmp = vertices.get(0).color;
+			tmp.scale(3.0f / 8.0f);
+
+			color = tmp;
+
+			tmp = vertices.get(1).color;
+			tmp.scale(3.0f / 8.0f);
+
+			color.add(tmp);
+
+			tmp = vertices.get(2).color;
+			tmp.scale(1.0f / 8.0f);
+
+			color.add(tmp);
+
+			tmp = vertices.get(3).color;
+			tmp.scale(1.0f / 8.0f);
+
+			color.add(tmp);
+
+			vertex.color = color;
+		}
+
+		// ----- Normal ----- //
+		if (vertices.get(0).normal != null) {
+
+			tmp = vertices.get(0).normal;
+			tmp.scale(3.0f / 8.0f);
+
+			normal = tmp;
+
+			tmp = vertices.get(1).normal;
+			tmp.scale(3.0f / 8.0f);
+
+			normal.add(tmp);
+
+			tmp = vertices.get(2).normal;
+			tmp.scale(1.0f / 8.0f);
+
+			normal.add(tmp);
+
+			tmp = vertices.get(3).normal;
+			tmp.scale(1.0f / 8.0f);
+
+			normal.add(tmp);
+
+			vertex.normal = normal;
+		}
+
+		// ----- TexCoord ----- //
+
+		if (vertices.get(0).texCoord != null) {
+
+			Vector2f tmp2f = vertices.get(0).texCoord;
+			tmp2f.scale(3.0f / 8.0f);
+
+			texCoord = tmp2f;
+
+			tmp2f = vertices.get(1).texCoord;
+			tmp2f.scale(3.0f / 8.0f);
+
+			texCoord.add(tmp2f);
+
+			tmp2f = vertices.get(2).texCoord;
+			tmp2f.scale(1.0f / 8.0f);
+
+			texCoord.add(tmp2f);
+
+			tmp2f = vertices.get(3).texCoord;
+			tmp2f.scale(1.0f / 8.0f);
+
+			texCoord.add(tmp2f);
+
+			vertex.texCoord = texCoord;
+		}
+
 		return vertex;
 	}
 
@@ -508,7 +569,7 @@ public class MeshData {
 		return vertices;
 	}
 
-	private void createNewVertexData() {
+	private VertexData createNewVertexData() {
 
 		List<Integer> newIndices = new ArrayList<Integer>();
 
@@ -530,10 +591,10 @@ public class MeshData {
 		int[] indices = toIArray(newIndices);
 
 		// DEBUG ONLY
-		//float[] colors = new float[positions.length];
-		//for (int i = 0; i < colors.length; i++){
-		//	colors[i] = 1;
-		//}
+		// float[] colors = new float[positions.length];
+		// for (int i = 0; i < colors.length; i++){
+		// colors[i] = 1;
+		// }
 		// DEBUG ONLY
 
 		VertexData vertexData = renderContext.makeVertexData(positions.length / 3);
@@ -543,6 +604,8 @@ public class MeshData {
 		vertexData.addIndices(indices);
 
 		this.vertexData = vertexData;
+		
+		return vertexData;
 	}
 
 	private float[] toPArray(List<Vertex> list) {
@@ -585,7 +648,8 @@ public class MeshData {
 		return indices;
 	}
 
-	// calculates 3 indices: the midpoint of e1, e2 and the corner the two share together, and adds them to newIndices
+	// calculates 3 indices: the midpoint of e1, e2 and the corner the two share
+	// together, and adds them to newIndices
 	private void addIndices(Edge edge1, Edge edge2, List<Integer> newIndices) {
 		newIndices.add(edge1.vMid);
 		newIndices.add(getCommonPoint(edge1, edge2));
